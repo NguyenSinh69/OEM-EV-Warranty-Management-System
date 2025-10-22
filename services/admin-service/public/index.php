@@ -1,38 +1,20 @@
 <?php
+require_once dirname(__DIR__) . '/src/Core/ResponseHelper.php';
+require_once dirname(__DIR__) . '/src/Core/AuthMiddleware.php';
+require_once dirname(__DIR__) . '/src/app/Http/Controllers/AdminController.php';
 
-// Simple index file for admin service
-header('Content-Type: application/json');
+use App\Http\Controllers\AdminController;
+use Core\ResponseHelper;
 
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$uri = $_SERVER['REQUEST_URI'];
 $method = $_SERVER['REQUEST_METHOD'];
 
-// Health check endpoint
-if ($uri === '/api/health') {
-    echo json_encode([
-        'status' => 'healthy',
-        'service' => 'admin-service',
-        'timestamp' => date('c'),
-        'version' => '1.0.0'
-    ]);
-    exit;
-}
+$controller = new AdminController();
 
-// Simple routing
-if (strpos($uri, '/api/admin') === 0) {
-    echo json_encode([
-        'success' => true,
-        'service' => 'admin-service',
-        'message' => 'Admin service is running',
-        'endpoint' => $uri,
-        'method' => $method
-    ]);
-    exit;
+if ($uri === '/admin/roles' && $method === 'GET') {
+    $controller->getRoles();
+} elseif (preg_match('#^/admin/claims/(\d+)/decision$#', $uri, $matches) && $method === 'POST') {
+    $controller->decideClaim($matches[1]);
+} else {
+    ResponseHelper::json(['error' => 'Not Found'], 404);
 }
-
-// Default response
-http_response_code(404);
-echo json_encode([
-    'success' => false,
-    'message' => 'Endpoint not found',
-    'service' => 'admin-service'
-]);
