@@ -1,68 +1,32 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
+use Core\ResponseHelper;
+use Core\AuthMiddleware;
 
-class AdminController extends Controller
-{
-    /**
-     * Health check
-     */
-    public function health(): JsonResponse
-    {
-        return response()->json([
-            'status' => 'healthy',
-            'service' => 'admin-service',
-            'timestamp' => now(),
-            'version' => '1.0.0'
-        ]);
+class AdminController {
+    public function getRoles() {
+        AuthMiddleware::authorize('Admin');
+
+        $roles = [
+            ['code' => 'SC_Staff', 'name' => 'Service Center Staff'],
+            ['code' => 'SC_Technician', 'name' => 'Service Center Technician'],
+            ['code' => 'EVM_Staff', 'name' => 'Manufacturer Staff'],
+            ['code' => 'Admin', 'name' => 'System Administrator']
+        ];
+
+        ResponseHelper::json(['roles' => $roles]);
     }
 
-    /**
-     * Get system statistics
-     */
-    public function getStats(): JsonResponse
-    {
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'total_customers' => 150,
-                'total_vehicles' => 120,
-                'total_claims' => 45,
-                'pending_claims' => 12,
-                'completed_claims' => 28,
-                'rejected_claims' => 5
-            ],
-            'message' => 'Statistics retrieved successfully'
-        ]);
-    }
+    public function decideClaim($claimId) {
+        AuthMiddleware::authorize('EVM_Staff');
 
-    /**
-     * Get warranty policies
-     */
-    public function getPolicies(): JsonResponse
-    {
-        return response()->json([
-            'success' => true,
-            'data' => [
-                [
-                    'id' => 1,
-                    'name' => 'Basic Warranty',
-                    'duration_months' => 24,
-                    'coverage' => ['battery', 'motor', 'electrical'],
-                    'description' => 'Standard 2-year warranty'
-                ],
-                [
-                    'id' => 2,
-                    'name' => 'Extended Warranty', 
-                    'duration_months' => 60,
-                    'coverage' => ['battery', 'motor', 'electrical', 'software'],
-                    'description' => 'Extended 5-year warranty'
-                ]
-            ],
-            'message' => 'Policies retrieved successfully'
+        $body = json_decode(file_get_contents('php://input'), true);
+        $decision = $body['decision'] ?? 'pending';
+
+        ResponseHelper::json([
+            'claim_id' => $claimId,
+            'decision' => $decision
         ]);
     }
 }
