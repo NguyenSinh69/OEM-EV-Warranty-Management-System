@@ -1,3 +1,5 @@
+version: '3.3'
+
 services:
   # Kong API Gateway
   kong-database:
@@ -27,7 +29,7 @@ services:
 
   kong:
     image: kong:3.4
-    user: "${KONG_USER:-kong}"
+    user: "kong"
     depends_on:
       - kong-database
       - kong-migrations
