@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campaign Management - Vehicle Service</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .campaign-form {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .form-header {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .progress-card {
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .status-badge {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+        }
+        .priority-high { color: #dc3545; }
+        .priority-medium { color: #fd7e14; }
+        .priority-low { color: #28a745; }
+    </style>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="fas fa-car-battery"></i> Vehicle Service</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="#campaigns">Campaigns</a>
+                <a class="nav-link" href="#components">Components</a>
+                <a class="nav-link" href="#policies">Policies</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Campaign Form -->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="campaign-form">
+                    <div class="form-header text-center">
+                        <h2><i class="fas fa-bullhorn"></i> Create New Campaign</h2>
+                        <p class="mb-0">Create recall or service campaigns for EV components</p>
+                    </div>
+                    
+                    <form id="campaignForm">
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="title" class="form-label">Campaign Title *</label>
+                                <input type="text" class="form-control" id="title" name="title" required>
+                                <div class="invalid-feedback">Please provide a campaign title.</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="campaign_type" class="form-label">Campaign Type *</label>
+                                <select class="form-select" id="campaign_type" name="campaign_type" required>
+                                    <option value="">Select Type</option>
+                                    <option value="recall">Recall</option>
+                                    <option value="service_campaign">Service Campaign</option>
+                                    <option value="maintenance">Preventive Maintenance</option>
+                                </select>
+                                <div class="invalid-feedback">Please select a campaign type.</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="priority_level" class="form-label">Priority Level</label>
+                                <select class="form-select" id="priority_level" name="priority_level">
+                                    <option value="low">Low</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="high">High</option>
+                                    <option value="critical">Critical</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="start_date" class="form-label">Start Date *</label>
+                                <input type="date" class="form-control" id="start_date" name="start_date" required>
+                                <div class="invalid-feedback">Please select a start date.</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="end_date" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="end_date" name="end_date">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Describe the campaign purpose and scope"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="affected_models" class="form-label">Affected Vehicle Models</label>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="Model-X-2024" id="model_x_2024">
+                                        <label class="form-check-label" for="model_x_2024">Model-X-2024</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="Model-Y-2024" id="model_y_2024">
+                                        <label class="form-check-label" for="model_y_2024">Model-Y-2024</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="Model-Z-2023" id="model_z_2023">
+                                        <label class="form-check-label" for="model_z_2023">Model-Z-2023</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="affected_components" class="form-label">Affected Components</label>
+                            <div class="row" id="componentsContainer">
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="1" id="comp_battery">
+                                        <label class="form-check-label" for="comp_battery">Battery Pack</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="3" id="comp_motor">
+                                        <label class="form-check-label" for="comp_motor">Motor</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="5" id="comp_bms">
+                                        <label class="form-check-label" for="comp_bms">BMS</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="6" id="comp_inverter">
+                                        <label class="form-check-label" for="comp_inverter">Inverter</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="instructions" class="form-label">Service Instructions</label>
+                            <textarea class="form-control" id="instructions" name="instructions" rows="4" placeholder="Detailed instructions for technicians"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="draft" selected>Draft</option>
+                                <option value="active">Active</option>
+                                <option value="paused">Paused</option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save"></i> Create Campaign
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Campaign Progress Dashboard -->
+            <div class="col-md-4">
+                <div class="card progress-card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-chart-line"></i> Campaign Progress</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="campaignStats" class="text-center">
+                            <p class="text-muted">Select a campaign to view progress</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card progress-card mt-3">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-list"></i> Active Campaigns</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="activeCampaigns">
+                            <div class="text-center text-muted">
+                                <i class="fas fa-spinner fa-spin"></i> Loading campaigns...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="fas fa-check-circle"></i> Success</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="successMessage">Campaign created successfully!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE = 'http://localhost:8081/api';
+        
+        // Form validation and submission
+        document.getElementById('campaignForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!this.checkValidity()) {
+                e.stopPropagation();
+                this.classList.add('was-validated');
+                return;
+            }
+            
+            const formData = new FormData(this);
+            const data = {};
+            
+            // Get basic form data
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+            
+            // Get affected models
+            const affectedModels = [];
+            document.querySelectorAll('input[type="checkbox"][value*="Model-"]').forEach(cb => {
+                if (cb.checked) affectedModels.push(cb.value);
+            });
+            data.affected_models = affectedModels;
+            
+            // Get affected components
+            const affectedComponents = [];
+            document.querySelectorAll('input[type="checkbox"][value]:not([value*="Model-"])').forEach(cb => {
+                if (cb.checked) affectedComponents.push(parseInt(cb.value));
+            });
+            data.affected_components = affectedComponents;
+            
+            try {
+                const response = await fetch(`${API_BASE}/campaigns`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('successMessage').textContent = result.message;
+                    new bootstrap.Modal(document.getElementById('successModal')).show();
+                    this.reset();
+                    this.classList.remove('was-validated');
+                    loadActiveCampaigns(); // Refresh campaigns list
+                } else {
+                    alert('Error: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                alert('Network error: ' + error.message);
+            }
+        });
+        
+        // Load active campaigns
+        async function loadActiveCampaigns() {
+            try {
+                const response = await fetch(`${API_BASE}/campaigns?status=active`);
+                const result = await response.json();
+                
+                const container = document.getElementById('activeCampaigns');
+                
+                if (result.data && result.data.length > 0) {
+                    container.innerHTML = result.data.map(campaign => `
+                        <div class="card mb-2" onclick="loadCampaignProgress(${campaign.id})">
+                            <div class="card-body p-2" style="cursor: pointer;">
+                                <h6 class="mb-1">${campaign.title}</h6>
+                                <small class="text-muted d-block">${campaign.campaign_type}</small>
+                                <span class="badge status-badge priority-${campaign.priority_level}">${campaign.priority_level}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<p class="text-muted text-center">No active campaigns</p>';
+                }
+            } catch (error) {
+                console.error('Error loading campaigns:', error);
+                document.getElementById('activeCampaigns').innerHTML = '<p class="text-danger text-center">Error loading campaigns</p>';
+            }
+        }
+        
+        // Load campaign progress
+        async function loadCampaignProgress(campaignId) {
+            try {
+                const response = await fetch(`${API_BASE}/campaigns/${campaignId}/progress`);
+                const result = await response.json();
+                
+                const container = document.getElementById('campaignStats');
+                const stats = result.data.statistics;
+                
+                container.innerHTML = `
+                    <h6>Campaign Progress</h6>
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="text-primary">
+                                <h4>${stats.total_affected || 0}</h4>
+                                <small>Total Affected</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-success">
+                                <h4>${stats.completed || 0}</h4>
+                                <small>Completed</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mt-2">
+                            <div class="text-warning">
+                                <h4>${stats.notified || 0}</h4>
+                                <small>Notified</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mt-2">
+                            <div class="text-info">
+                                <h4>${stats.in_progress || 0}</h4>
+                                <small>In Progress</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button class="btn btn-sm btn-outline-primary" onclick="notifyCampaignCustomers(${campaignId})">
+                            <i class="fas fa-envelope"></i> Send Notifications
+                        </button>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading progress:', error);
+            }
+        }
+        
+        // Send campaign notifications
+        async function notifyCampaignCustomers(campaignId) {
+            try {
+                const response = await fetch(`${API_BASE}/campaigns/${campaignId}/notify`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: '{}'
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    alert(`Notifications sent successfully! ${result.data.notifications_sent} customers notified.`);
+                    loadCampaignProgress(campaignId); // Refresh progress
+                } else {
+                    alert('Error sending notifications: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                alert('Network error: ' + error.message);
+            }
+        }
+        
+        // Set minimum date to today
+        document.getElementById('start_date').min = new Date().toISOString().split('T')[0];
+        document.getElementById('end_date').min = new Date().toISOString().split('T')[0];
+        
+        // Update end date minimum when start date changes
+        document.getElementById('start_date').addEventListener('change', function() {
+            document.getElementById('end_date').min = this.value;
+        });
+        
+        // Load campaigns on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadActiveCampaigns();
+        });
+    </script>
+</body>
+</html>
