@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warranty Policy Management - Vehicle Service</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .policy-form {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .form-header {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .component-card {
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .component-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .component-card.selected {
+            border: 2px solid #007bff;
+            background-color: #e3f2fd;
+        }
+        .coverage-item {
+            background: #e9ecef;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin: 4px;
+            display: inline-block;
+        }
+        .json-editor {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="fas fa-shield-alt"></i> Warranty Management</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="campaign-form.html">Campaigns</a>
+                <a class="nav-link" href="#components">Components</a>
+                <a class="nav-link" href="#policies">Policies</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <!-- Policy Form -->
+            <div class="col-md-8">
+                <div class="policy-form">
+                    <div class="form-header text-center">
+                        <h2><i class="fas fa-shield-alt"></i> Create Warranty Policy</h2>
+                        <p class="mb-0">Define warranty coverage and conditions for EV components</p>
+                    </div>
+                    
+                    <form id="policyForm">
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="policy_name" class="form-label">Policy Name *</label>
+                                <input type="text" class="form-control" id="policy_name" name="policy_name" required>
+                                <div class="invalid-feedback">Please provide a policy name.</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="warranty_duration" class="form-label">Warranty Duration (months) *</label>
+                                <input type="number" class="form-control" id="warranty_duration" name="warranty_duration" min="1" max="120" required>
+                                <div class="invalid-feedback">Please enter warranty duration (1-120 months).</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="effective_date" class="form-label">Effective Date *</label>
+                                <input type="date" class="form-control" id="effective_date" name="effective_date" required>
+                                <div class="invalid-feedback">Please select effective date.</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="expiry_date" class="form-label">Expiry Date</label>
+                                <input type="date" class="form-control" id="expiry_date" name="expiry_date">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="status" class="form-label">Status</label>
+                                <select class="form-select" id="status" name="status">
+                                    <option value="active" selected>Active</option>
+                                    <option value="inactive">Inactive</option>
+                                    <option value="expired">Expired</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Component Selection -->
+                        <div class="mb-4">
+                            <label class="form-label">Select Component *</label>
+                            <input type="hidden" id="component_id" name="component_id" required>
+                            <div class="invalid-feedback">Please select a component.</div>
+                            <div class="row" id="componentsGrid">
+                                <div class="text-center">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading components...
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Coverage Details -->
+                        <div class="mb-3">
+                            <label class="form-label">Coverage Details</label>
+                            <div class="mb-2">
+                                <small class="text-muted">Select what is covered under this warranty:</small>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="manufacturing_defects" id="cov_manufacturing">
+                                        <label class="form-check-label" for="cov_manufacturing">Manufacturing Defects</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="capacity_degradation" id="cov_degradation">
+                                        <label class="form-check-label" for="cov_degradation">Capacity Degradation</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="thermal_runaway" id="cov_thermal">
+                                        <label class="form-check-label" for="cov_thermal">Thermal Issues</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="software_issues" id="cov_software">
+                                        <label class="form-check-label" for="cov_software">Software Issues</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="hardware_failure" id="cov_hardware">
+                                        <label class="form-check-label" for="cov_hardware">Hardware Failure</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="labor_included" id="cov_labor">
+                                        <label class="form-check-label" for="cov_labor">Labor Included</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Degradation Limit -->
+                        <div class="mb-3" id="degradationSection" style="display: none;">
+                            <label for="degradation_limit" class="form-label">Degradation Limit (%)</label>
+                            <input type="number" class="form-control" id="degradation_limit" name="degradation_limit" min="50" max="95" value="80">
+                            <small class="text-muted">Warranty covers if capacity drops below this percentage</small>
+                        </div>
+
+                        <!-- Warranty Conditions -->
+                        <div class="mb-3">
+                            <label class="form-label">Warranty Conditions</label>
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <label for="usage_condition" class="form-label">Usage Type</label>
+                                    <select class="form-select" id="usage_condition">
+                                        <option value="normal_driving">Normal Driving</option>
+                                        <option value="commercial_use">Commercial Use</option>
+                                        <option value="racing_excluded">Racing Excluded</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <label for="temperature_range" class="form-label">Operating Temperature</label>
+                                    <select class="form-select" id="temperature_range">
+                                        <option value="-20C_to_60C">-20°C to 60°C</option>
+                                        <option value="-15C_to_55C">-15°C to 55°C</option>
+                                        <option value="-10C_to_50C">-10°C to 50°C</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Warranty Exclusions -->
+                        <div class="mb-3">
+                            <label class="form-label">Warranty Exclusions</label>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="physical_damage" id="excl_physical">
+                                        <label class="form-check-label" for="excl_physical">Physical Damage</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="overcharging" id="excl_overcharge">
+                                        <label class="form-check-label" for="excl_overcharge">Overcharging</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="misuse" id="excl_misuse">
+                                        <label class="form-check-label" for="excl_misuse">Misuse/Abuse</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="water_damage" id="excl_water">
+                                        <label class="form-check-label" for="excl_water">Water Damage</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="unauthorized_repair" id="excl_repair">
+                                        <label class="form-check-label" for="excl_repair">Unauthorized Repair</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="normal_wear" id="excl_wear">
+                                        <label class="form-check-label" for="excl_wear">Normal Wear & Tear</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-save"></i> Create Warranty Policy
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Existing Policies -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-list"></i> Existing Policies</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="existingPolicies">
+                            <div class="text-center text-muted">
+                                <i class="fas fa-spinner fa-spin"></i> Loading policies...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Component Stats -->
+                <div class="card mt-3">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0"><i class="fas fa-chart-pie"></i> Component Coverage</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="componentStats">
+                            <div class="text-center text-muted">
+                                Select a component to see coverage stats
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="fas fa-check-circle"></i> Success</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="successMessage">Warranty policy created successfully!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE = 'http://localhost:8081/api';
+        
+        // Load components on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadComponents();
+            loadExistingPolicies();
+        });
+        
+        // Load components
+        async function loadComponents() {
+            try {
+                const response = await fetch(`${API_BASE}/components`);
+                const result = await response.json();
+                
+                const container = document.getElementById('componentsGrid');
+                
+                if (result.data && result.data.length > 0) {
+                    container.innerHTML = result.data.map(component => `
+                        <div class="col-md-6 mb-3">
+                            <div class="card component-card" onclick="selectComponent(${component.id}, this)">
+                                <div class="card-body">
+                                    <h6 class="card-title">${component.component_name}</h6>
+                                    <p class="card-text">
+                                        <small class="text-muted">Model: ${component.model}</small><br>
+                                        <small class="text-muted">Type: ${component.component_type}</small><br>
+                                        <span class="badge bg-info">${component.warranty_period} months</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<div class="col-12"><p class="text-muted text-center">No components available</p></div>';
+                }
+            } catch (error) {
+                console.error('Error loading components:', error);
+                document.getElementById('componentsGrid').innerHTML = '<div class="col-12"><p class="text-danger text-center">Error loading components</p></div>';
+            }
+        }
+        
+        // Select component
+        function selectComponent(componentId, element) {
+            // Remove previous selection
+            document.querySelectorAll('.component-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Select current card
+            element.classList.add('selected');
+            document.getElementById('component_id').value = componentId;
+            
+            // Remove validation error
+            document.getElementById('component_id').classList.remove('is-invalid');
+        }
+        
+        // Show/hide degradation section
+        document.getElementById('cov_degradation').addEventListener('change', function() {
+            const section = document.getElementById('degradationSection');
+            section.style.display = this.checked ? 'block' : 'none';
+        });
+        
+        // Form submission
+        document.getElementById('policyForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Validate component selection
+            if (!document.getElementById('component_id').value) {
+                document.getElementById('component_id').classList.add('is-invalid');
+                return;
+            }
+            
+            if (!this.checkValidity()) {
+                e.stopPropagation();
+                this.classList.add('was-validated');
+                return;
+            }
+            
+            const formData = new FormData(this);
+            const data = {};
+            
+            // Get basic form data
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+            
+            // Get coverage details
+            const coverage = [];
+            document.querySelectorAll('input[type="checkbox"][id^="cov_"]:checked').forEach(cb => {
+                coverage.push(cb.value);
+            });
+            
+            const coverageDetails = { coverage: coverage };
+            if (document.getElementById('cov_degradation').checked) {
+                coverageDetails.degradation_limit = document.getElementById('degradation_limit').value + '%';
+            }
+            data.coverage_details = coverageDetails;
+            
+            // Get conditions
+            const conditions = {
+                usage: document.getElementById('usage_condition').value,
+                temperature: document.getElementById('temperature_range').value
+            };
+            data.conditions = conditions;
+            
+            // Get exclusions
+            const exclusions = [];
+            document.querySelectorAll('input[type="checkbox"][id^="excl_"]:checked').forEach(cb => {
+                exclusions.push(cb.value);
+            });
+            data.exclusions = { excluded_items: exclusions };
+            
+            try {
+                const response = await fetch(`${API_BASE}/warranty-policies`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('successMessage').textContent = result.message;
+                    new bootstrap.Modal(document.getElementById('successModal')).show();
+                    this.reset();
+                    this.classList.remove('was-validated');
+                    
+                    // Reset component selection
+                    document.querySelectorAll('.component-card').forEach(card => {
+                        card.classList.remove('selected');
+                    });
+                    document.getElementById('degradationSection').style.display = 'none';
+                    
+                    loadExistingPolicies();
+                } else {
+                    alert('Error: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                alert('Network error: ' + error.message);
+            }
+        });
+        
+        // Load existing policies
+        async function loadExistingPolicies() {
+            try {
+                const response = await fetch(`${API_BASE}/warranty-policies`);
+                const result = await response.json();
+                
+                const container = document.getElementById('existingPolicies');
+                
+                if (result.data && result.data.length > 0) {
+                    container.innerHTML = result.data.map(policy => `
+                        <div class="card mb-2">
+                            <div class="card-body p-2">
+                                <h6 class="mb-1">${policy.policy_name}</h6>
+                                <small class="text-muted d-block">${policy.warranty_duration} months</small>
+                                <span class="badge bg-${policy.status === 'active' ? 'success' : 'secondary'}">${policy.status}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<p class="text-muted text-center">No policies created yet</p>';
+                }
+            } catch (error) {
+                console.error('Error loading policies:', error);
+                document.getElementById('existingPolicies').innerHTML = '<p class="text-danger text-center">Error loading policies</p>';
+            }
+        }
+        
+        // Set minimum date to today
+        document.getElementById('effective_date').min = new Date().toISOString().split('T')[0];
+        document.getElementById('expiry_date').min = new Date().toISOString().split('T')[0];
+        
+        // Update expiry date minimum when effective date changes
+        document.getElementById('effective_date').addEventListener('change', function() {
+            document.getElementById('expiry_date').min = this.value;
+        });
+    </script>
+</body>
+</html>
