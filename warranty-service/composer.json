@@ -3,7 +3,7 @@
 "slim/slim": "^4.10",
 "slim/psr7": "^1.6",
 "vlucas/phpdotenv": "^5.5",
-"monolog/monolog": "^3.0",
+"monolog/monolog": "^2.0",
 "php-di/php-di": "^6.4",
 "php-di/slim-bridge": "^3.2"
 },
