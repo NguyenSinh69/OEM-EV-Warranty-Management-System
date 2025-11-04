@@ -1,0 +1,210 @@
+[2025-11-04 15:02:01] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [] is not defined. at D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Log\\LogManager.php:210)
+[stacktrace]
+#0 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Log\\LogManager.php(135): Illuminate\\Log\\LogManager->resolve(NULL, NULL)
+#1 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Log\\LogManager.php(122): Illuminate\\Log\\LogManager->get(NULL)
+#2 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Log\\LogManager.php(645): Illuminate\\Log\\LogManager->driver()
+#3 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Exceptions\\Handler.php(274): Illuminate\\Log\\LogManager->error('Unable to load ...', Array)
+#4 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(454): Illuminate\\Foundation\\Exceptions\\Handler->report(Object(Exception))
+#5 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(157): Illuminate\\Foundation\\Console\\Kernel->reportException(Object(Exception))
+#6 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\artisan(37): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#7 {main}
+"} 
+[2025-11-04 15:02:01] laravel.ERROR: Unable to load the "app" configuration file. {"exception":"[object] (Exception(code: 0): Unable to load the \"app\" configuration file. at D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\LoadConfiguration.php:66)
+[stacktrace]
+#0 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\LoadConfiguration.php(39): Illuminate\\Foundation\\Bootstrap\\LoadConfiguration->loadConfigurationFiles(Object(Illuminate\\Foundation\\Application), Object(Illuminate\\Config\\Repository))
+#1 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(265): Illuminate\\Foundation\\Bootstrap\\LoadConfiguration->bootstrap(Object(Illuminate\\Foundation\\Application))
+#2 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(383): Illuminate\\Foundation\\Application->bootstrapWith(Array)
+#3 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(153): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#4 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\artisan(37): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#5 {main}
+"} 
+[2025-11-04 15:04:18] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [] is not defined. at D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Log\\LogManager.php:210)
+[stacktrace]
+#0 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Log\\LogManager.php(135): Illuminate\\Log\\LogManager->resolve(NULL, NULL)
+#1 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Log\\LogManager.php(122): Illuminate\\Log\\LogManager->get(NULL)
+#2 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Log\\LogManager.php(645): Illuminate\\Log\\LogManager->driver()
+#3 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Exceptions\\Handler.php(274): Illuminate\\Log\\LogManager->error('Unable to load ...', Array)
+#4 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(454): Illuminate\\Foundation\\Exceptions\\Handler->report(Object(Exception))
+#5 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(157): Illuminate\\Foundation\\Console\\Kernel->reportException(Object(Exception))
+#6 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\artisan(37): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#7 {main}
+"} 
+[2025-11-04 15:04:18] laravel.ERROR: Unable to load the "app" configuration file. {"exception":"[object] (Exception(code: 0): Unable to load the \"app\" configuration file. at D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\LoadConfiguration.php:66)
+[stacktrace]
+#0 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\LoadConfiguration.php(39): Illuminate\\Foundation\\Bootstrap\\LoadConfiguration->loadConfigurationFiles(Object(Illuminate\\Foundation\\Application), Object(Illuminate\\Config\\Repository))
+#1 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(265): Illuminate\\Foundation\\Bootstrap\\LoadConfiguration->bootstrap(Object(Illuminate\\Foundation\\Application))
+#2 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(383): Illuminate\\Foundation\\Application->bootstrapWith(Array)
+#3 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(153): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#4 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\artisan(37): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#5 {main}
+"} 
+[2025-11-04 15:34:50] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [] is not defined. at D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Log\\LogManager.php:210)
+[stacktrace]
+#0 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Log\\LogManager.php(135): Illuminate\\Log\\LogManager->resolve(NULL, NULL)
+#1 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Log\\LogManager.php(122): Illuminate\\Log\\LogManager->get(NULL)
+#2 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Log\\LogManager.php(645): Illuminate\\Log\\LogManager->driver()
+#3 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Exceptions\\Handler.php(274): Illuminate\\Log\\LogManager->error('Unable to load ...', Array)
+#4 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(454): Illuminate\\Foundation\\Exceptions\\Handler->report(Object(Exception))
+#5 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(157): Illuminate\\Foundation\\Console\\Kernel->reportException(Object(Exception))
+#6 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\artisan(37): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#7 {main}
+"} 
+[2025-11-04 15:34:50] laravel.ERROR: Unable to load the "app" configuration file. {"exception":"[object] (Exception(code: 0): Unable to load the \"app\" configuration file. at D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\LoadConfiguration.php:66)
+[stacktrace]
+#0 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\LoadConfiguration.php(39): Illuminate\\Foundation\\Bootstrap\\LoadConfiguration->loadConfigurationFiles(Object(Illuminate\\Foundation\\Application), Object(Illuminate\\Config\\Repository))
+#1 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(265): Illuminate\\Foundation\\Bootstrap\\LoadConfiguration->bootstrap(Object(Illuminate\\Foundation\\Application))
+#2 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(383): Illuminate\\Foundation\\Application->bootstrapWith(Array)
+#3 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(153): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#4 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\artisan(37): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#5 {main}
+"} 
+[2025-11-04 15:35:04] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [] is not defined. at D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Log\\LogManager.php:210)
+[stacktrace]
+#0 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Log\\LogManager.php(135): Illuminate\\Log\\LogManager->resolve(NULL, NULL)
+#1 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Log\\LogManager.php(122): Illuminate\\Log\\LogManager->get(NULL)
+#2 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Log\\LogManager.php(645): Illuminate\\Log\\LogManager->driver()
+#3 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Exceptions\\Handler.php(274): Illuminate\\Log\\LogManager->error('Unable to load ...', Array)
+#4 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(454): Illuminate\\Foundation\\Exceptions\\Handler->report(Object(Exception))
+#5 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(157): Illuminate\\Foundation\\Console\\Kernel->reportException(Object(Exception))
+#6 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\artisan(37): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#7 {main}
+"} 
+[2025-11-04 15:35:04] laravel.ERROR: Unable to load the "app" configuration file. {"exception":"[object] (Exception(code: 0): Unable to load the \"app\" configuration file. at D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\LoadConfiguration.php:66)
+[stacktrace]
+#0 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\LoadConfiguration.php(39): Illuminate\\Foundation\\Bootstrap\\LoadConfiguration->loadConfigurationFiles(Object(Illuminate\\Foundation\\Application), Object(Illuminate\\Config\\Repository))
+#1 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(265): Illuminate\\Foundation\\Bootstrap\\LoadConfiguration->bootstrap(Object(Illuminate\\Foundation\\Application))
+#2 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(383): Illuminate\\Foundation\\Application->bootstrapWith(Array)
+#3 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(153): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#4 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\artisan(37): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#5 {main}
+"} 
+[2025-11-04 15:49:35] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [] is not defined. at D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Log\\LogManager.php:210)
+[stacktrace]
+#0 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Log\\LogManager.php(135): Illuminate\\Log\\LogManager->resolve(NULL, NULL)
+#1 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Log\\LogManager.php(122): Illuminate\\Log\\LogManager->get(NULL)
+#2 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Log\\LogManager.php(645): Illuminate\\Log\\LogManager->driver()
+#3 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Exceptions\\Handler.php(274): Illuminate\\Log\\LogManager->error('Call to undefin...', Array)
+#4 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(454): Illuminate\\Foundation\\Exceptions\\Handler->report(Object(Error))
+#5 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(157): Illuminate\\Foundation\\Console\\Kernel->reportException(Object(Error))
+#6 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\artisan(37): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#7 {main}
+"} 
+[2025-11-04 15:49:35] laravel.ERROR: Call to undefined method Illuminate\Support\ServiceProvider::defaultProviders() {"exception":"[object] (Error(code: 0): Call to undefined method Illuminate\\Support\\ServiceProvider::defaultProviders() at D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\config\\app.php:158)
+[stacktrace]
+#0 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\LoadConfiguration.php(70): require()
+#1 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\LoadConfiguration.php(39): Illuminate\\Foundation\\Bootstrap\\LoadConfiguration->loadConfigurationFiles(Object(Illuminate\\Foundation\\Application), Object(Illuminate\\Config\\Repository))
+#2 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(265): Illuminate\\Foundation\\Bootstrap\\LoadConfiguration->bootstrap(Object(Illuminate\\Foundation\\Application))
+#3 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(383): Illuminate\\Foundation\\Application->bootstrapWith(Array)
+#4 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(153): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#5 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\artisan(37): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#6 {main}
+"} 
+[2025-11-04 14:50:18] local.ERROR: The D:\OEM-EV-Warranty-Management-System-main\Workflow\bootstrap\cache directory must be present and writable. {"exception":"[object] (Exception(code: 0): The D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\bootstrap\\cache directory must be present and writable. at D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php:178)
+[stacktrace]
+#0 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(137): Illuminate\\Foundation\\PackageManifest->write(Array)
+#1 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(107): Illuminate\\Foundation\\PackageManifest->build()
+#2 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(90): Illuminate\\Foundation\\PackageManifest->getManifest()
+#3 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(79): Illuminate\\Foundation\\PackageManifest->config('aliases')
+#4 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\RegisterFacades.php(26): Illuminate\\Foundation\\PackageManifest->aliases()
+#5 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(265): Illuminate\\Foundation\\Bootstrap\\RegisterFacades->bootstrap(Object(Illuminate\\Foundation\\Application))
+#6 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(383): Illuminate\\Foundation\\Application->bootstrapWith(Array)
+#7 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(153): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#8 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\artisan(37): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#9 {main}
+"} 
+[2025-11-04 14:50:34] local.ERROR: require(D:\OEM-EV-Warranty-Management-System-main\Workflow\routes/console.php): Failed to open stream: No such file or directory {"exception":"[object] (ErrorException(code: 0): require(D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\routes/console.php): Failed to open stream: No such file or directory at D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\app\\Console\\Kernel.php:25)
+[stacktrace]
+#0 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(270): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError(2, 'require(D:\\\\OEM-...', 'D:\\\\OEM-EV-Warra...', 25)
+#1 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\app\\Console\\Kernel.php(25): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(2, 'require(D:\\\\OEM-...', 'D:\\\\OEM-EV-Warra...', 25)
+#2 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\app\\Console\\Kernel.php(25): require()
+#3 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(389): App\\Console\\Kernel->commands()
+#4 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(153): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#5 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\artisan(37): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#6 {main}
+"} 
+[2025-11-04 14:51:03] local.ERROR: Class "App\Http\Controllers\Controller" not found {"exception":"[object] (Error(code: 0): Class \"App\\Http\\Controllers\\Controller\" not found at D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\app\\Http\\Controllers\\WarrantyClaimController.php:13)
+[stacktrace]
+#0 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\composer\\ClassLoader.php(576): include()
+#1 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\composer\\ClassLoader.php(427): Composer\\Autoload\\{closure}('D:\\\\OEM-EV-Warra...')
+#2 [internal function]: Composer\\Autoload\\ClassLoader->loadClass('App\\\\Http\\\\Contro...')
+#3 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(1091): is_a('App\\\\Http\\\\Contro...', 'Illuminate\\\\Rout...', true)
+#4 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(1030): Illuminate\\Routing\\Route->controllerMiddleware()
+#5 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(810): Illuminate\\Routing\\Route->gatherMiddleware()
+#6 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\RouteListCommand.php(210): Illuminate\\Routing\\Router->gatherRouteMiddleware(Object(Illuminate\\Routing\\Route))
+#7 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\RouteListCommand.php(155): Illuminate\\Foundation\\Console\\RouteListCommand->getMiddleware(Object(Illuminate\\Routing\\Route))
+#8 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\RouteListCommand.php(125): Illuminate\\Foundation\\Console\\RouteListCommand->getRouteInformation(Object(Illuminate\\Routing\\Route))
+#9 [internal function]: Illuminate\\Foundation\\Console\\RouteListCommand->Illuminate\\Foundation\\Console\\{closure}(Object(Illuminate\\Routing\\Route), 5)
+#10 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Collections\\Arr.php(560): array_map(Object(Closure), Array, Array)
+#11 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Collections\\Collection.php(768): Illuminate\\Support\\Arr::map(Array, Object(Closure))
+#12 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\RouteListCommand.php(126): Illuminate\\Support\\Collection->map(Object(Closure))
+#13 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\RouteListCommand.php(110): Illuminate\\Foundation\\Console\\RouteListCommand->getRoutes()
+#14 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(36): Illuminate\\Foundation\\Console\\RouteListCommand->handle()
+#15 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#16 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(93): Illuminate\\Container\\Util::unwrapIfClosure(Object(Closure))
+#17 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(37): Illuminate\\Container\\BoundMethod::callBoundMethod(Object(Illuminate\\Foundation\\Application), Array, Object(Closure))
+#18 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php(661): Illuminate\\Container\\BoundMethod::call(Object(Illuminate\\Foundation\\Application), Array, Array, NULL)
+#19 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php(183): Illuminate\\Container\\Container->call(Array)
+#20 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\symfony\\console\\Command\\Command.php(291): Illuminate\\Console\\Command->execute(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Illuminate\\Console\\OutputStyle))
+#21 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php(153): Symfony\\Component\\Console\\Command\\Command->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Illuminate\\Console\\OutputStyle))
+#22 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\symfony\\console\\Application.php(1014): Illuminate\\Console\\Command->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#23 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\symfony\\console\\Application.php(301): Symfony\\Component\\Console\\Application->doRunCommand(Object(Illuminate\\Foundation\\Console\\RouteListCommand), Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#24 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\symfony\\console\\Application.php(171): Symfony\\Component\\Console\\Application->doRun(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#25 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Console\\Application.php(102): Symfony\\Component\\Console\\Application->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#26 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(155): Illuminate\\Console\\Application->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#27 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\artisan(37): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#28 {main}
+"} 
+[2025-11-04 14:51:54] local.ERROR: Target class [App\Http\Middleware\TrustProxies] does not exist. {"exception":"[object] (Illuminate\\Contracts\\Container\\BindingResolutionException(code: 0): Target class [App\\Http\\Middleware\\TrustProxies] does not exist. at D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php:891)
+[stacktrace]
+#0 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php(770): Illuminate\\Container\\Container->build('App\\\\Http\\\\Middle...')
+#1 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(881): Illuminate\\Container\\Container->resolve('App\\\\Http\\\\Middle...', Array, true)
+#2 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php(706): Illuminate\\Foundation\\Application->resolve('App\\\\Http\\\\Middle...', Array)
+#3 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(866): Illuminate\\Container\\Container->make('App\\\\Http\\\\Middle...', Array)
+#4 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(169): Illuminate\\Foundation\\Application->make('App\\\\Http\\\\Middle...')
+#5 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(116): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#6 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(165): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#7 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(134): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter(Object(Illuminate\\Http\\Request))
+#8 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\public\\index.php(52): Illuminate\\Foundation\\Http\\Kernel->handle(Object(Illuminate\\Http\\Request))
+#9 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(16): require_once('D:\\\\OEM-EV-Warra...')
+#10 {main}
+
+[previous exception] [object] (ReflectionException(code: -1): Class \"App\\Http\\Middleware\\TrustProxies\" does not exist at D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php:889)
+[stacktrace]
+#0 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php(889): ReflectionClass->__construct('App\\\\Http\\\\Middle...')
+#1 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php(770): Illuminate\\Container\\Container->build('App\\\\Http\\\\Middle...')
+#2 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(881): Illuminate\\Container\\Container->resolve('App\\\\Http\\\\Middle...', Array, true)
+#3 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php(706): Illuminate\\Foundation\\Application->resolve('App\\\\Http\\\\Middle...', Array)
+#4 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(866): Illuminate\\Container\\Container->make('App\\\\Http\\\\Middle...', Array)
+#5 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(169): Illuminate\\Foundation\\Application->make('App\\\\Http\\\\Middle...')
+#6 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(116): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#7 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(165): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#8 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(134): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter(Object(Illuminate\\Http\\Request))
+#9 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\public\\index.php(52): Illuminate\\Foundation\\Http\\Kernel->handle(Object(Illuminate\\Http\\Request))
+#10 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(16): require_once('D:\\\\OEM-EV-Warra...')
+#11 {main}
+"} 
+[2025-11-04 14:51:55] local.ERROR: Target class [App\Http\Middleware\TrustProxies] does not exist. {"exception":"[object] (Illuminate\\Contracts\\Container\\BindingResolutionException(code: 0): Target class [App\\Http\\Middleware\\TrustProxies] does not exist. at D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php:891)
+[stacktrace]
+#0 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php(770): Illuminate\\Container\\Container->build('App\\\\Http\\\\Middle...')
+#1 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(881): Illuminate\\Container\\Container->resolve('App\\\\Http\\\\Middle...', Array, true)
+#2 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php(706): Illuminate\\Foundation\\Application->resolve('App\\\\Http\\\\Middle...', Array)
+#3 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(866): Illuminate\\Container\\Container->make('App\\\\Http\\\\Middle...', Array)
+#4 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(239): Illuminate\\Foundation\\Application->make('App\\\\Http\\\\Middle...')
+#5 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(203): Illuminate\\Foundation\\Http\\Kernel->terminateMiddleware(Object(Illuminate\\Http\\Request), Object(Illuminate\\Http\\Response))
+#6 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\public\\index.php(55): Illuminate\\Foundation\\Http\\Kernel->terminate(Object(Illuminate\\Http\\Request), Object(Illuminate\\Http\\Response))
+#7 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(16): require_once('D:\\\\OEM-EV-Warra...')
+#8 {main}
+
+[previous exception] [object] (ReflectionException(code: -1): Class \"App\\Http\\Middleware\\TrustProxies\" does not exist at D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php:889)
+[stacktrace]
+#0 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php(889): ReflectionClass->__construct('App\\\\Http\\\\Middle...')
+#1 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php(770): Illuminate\\Container\\Container->build('App\\\\Http\\\\Middle...')
+#2 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(881): Illuminate\\Container\\Container->resolve('App\\\\Http\\\\Middle...', Array, true)
+#3 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php(706): Illuminate\\Foundation\\Application->resolve('App\\\\Http\\\\Middle...', Array)
+#4 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(866): Illuminate\\Container\\Container->make('App\\\\Http\\\\Middle...', Array)
+#5 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(239): Illuminate\\Foundation\\Application->make('App\\\\Http\\\\Middle...')
+#6 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(203): Illuminate\\Foundation\\Http\\Kernel->terminateMiddleware(Object(Illuminate\\Http\\Request), Object(Illuminate\\Http\\Response))
+#7 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\public\\index.php(55): Illuminate\\Foundation\\Http\\Kernel->terminate(Object(Illuminate\\Http\\Request), Object(Illuminate\\Http\\Response))
+#8 D:\\OEM-EV-Warranty-Management-System-main\\Workflow\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(16): require_once('D:\\\\OEM-EV-Warra...')
+#9 {main}
+"} 
