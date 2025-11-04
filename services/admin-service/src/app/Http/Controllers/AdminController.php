@@ -391,4 +391,56 @@ class AdminController {
             return ResponseHelper::json(['error' => 'Lỗi dashboard: ' . $e->getMessage()], 500);
         }
     }
+
+    // 9️⃣ GET /api/roles
+    public function getRoles() {
+        try {
+            $roles = [
+                ['id' => 'Admin', 'name' => 'Quản trị viên', 'description' => 'Toàn quyền hệ thống'],
+                ['id' => 'EVMStaff', 'name' => 'Nhân viên EVM', 'description' => 'Quản lý warranty claims'],
+                ['id' => 'SCStaff', 'name' => 'Nhân viên trung tâm', 'description' => 'Xử lý claims tại trung tâm'],
+                ['id' => 'Technician', 'name' => 'Kỹ thuật viên', 'description' => 'Thực hiện sửa chữa'],
+                ['id' => 'Customer', 'name' => 'Khách hàng', 'description' => 'Tạo warranty claims']
+            ];
+            return ResponseHelper::json($roles);
+        } catch (Exception $e) {
+            return ResponseHelper::json(['error' => 'Lỗi lấy roles: ' . $e->getMessage()], 500);
+        }
+    }
+
+    // 🔟 POST /api/claims/{id}/decision
+    public function decideClaim($claimId) {
+        AuthMiddleware::authorize('Admin');
+        
+        $data = json_decode(file_get_contents('php://input'), true);
+        if (!isset($data['decision']) || !in_array($data['decision'], ['approved', 'rejected'])) {
+            return ResponseHelper::json(['error' => 'Decision phải là approved hoặc rejected'], 400);
+        }
+
+        try {
+            // Check if claim exists
+            $claim = $this->db->query('SELECT id, status FROM warranty_claims WHERE id = ?', [$claimId]);
+            if (empty($claim)) {
+                return ResponseHelper::json(['error' => 'Claim không tồn tại'], 404);
+            }
+
+            // Update claim with admin decision
+            $newStatus = $data['decision'] === 'approved' ? 'approved' : 'rejected';
+            $notes = $data['notes'] ?? '';
+            
+            $this->db->execute(
+                'UPDATE warranty_claims SET status = ?, admin_notes = ?, reviewed_at = NOW() WHERE id = ?',
+                [$newStatus, $notes, $claimId]
+            );
+
+            return ResponseHelper::json([
+                'message' => 'Quyết định đã được lưu',
+                'claim_id' => $claimId,
+                'decision' => $data['decision'],
+                'status' => $newStatus
+            ]);
+        } catch (Exception $e) {
+            return ResponseHelper::json(['error' => 'Lỗi khi quyết định claim: ' . $e->getMessage()], 500);
+        }
+    }
 }
