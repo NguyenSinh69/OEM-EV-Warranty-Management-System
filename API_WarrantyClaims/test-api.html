@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Warranty Claims API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            min-height: 80px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 4px solid #4CAF50;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .error {
+            border-left-color: #f44336;
+            background: #ffebee;
+        }
+        label {
+            font-weight: bold;
+            color: #555;
+            display: block;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚗 EV Warranty Management System - API Test</h1>
+        
+        <div class="section">
+            <h2>1️⃣ Tạo Warranty Claim Mới</h2>
+            <label>VIN Number:</label>
+            <input type="text" id="vin" placeholder="VD: 1HGBH41JXMN109186" value="1HGBH41JXMN109186">
+            
+            <label>Customer ID:</label>
+            <input type="number" id="customerId" placeholder="VD: 12345" value="12345">
+            
+            <label>Mô tả vấn đề:</label>
+            <textarea id="description" placeholder="Mô tả chi tiết vấn đề...">Pin sạc không đầy, cần kiểm tra hệ thống điện</textarea>
+            
+            <button onclick="createClaim()">Tạo Claim</button>
+            <div id="createResult" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="section">
+            <h2>2️⃣ Xem Tất Cả Claims</h2>
+            <button onclick="getAllClaims()">Lấy Danh Sách Claims</button>
+            <div id="listResult" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="section">
+            <h2>3️⃣ Kiểm Tra Kết Nối Database</h2>
+            <p>Lưu ý: Cần import file <code>database.sql</code> vào MySQL trước khi test API!</p>
+            <button onclick="testConnection()">Test Connection</button>
+            <div id="connectionResult" class="result" style="display:none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-detect API URL (Docker port 8080 or local port 8000)
+        const API_URL = window.location.port === '8080' 
+            ? 'http://localhost:8080/api/warranty-claims'
+            : 'http://localhost:8000/api/warranty-claims';
+
+        async function createClaim() {
+            const resultDiv = document.getElementById('createResult');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.textContent = 'Đang gửi request...';
+
+            try {
+                const data = {
+                    vin: document.getElementById('vin').value,
+                    customer_id: parseInt(document.getElementById('customerId').value),
+                    description: document.getElementById('description').value
+                };
+
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                resultDiv.textContent = '✅ Response:\n' + JSON.stringify(result, null, 2);
+                
+                if (result.error) {
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ Error: ' + error.message;
+            }
+        }
+
+        async function getAllClaims() {
+            const resultDiv = document.getElementById('listResult');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.textContent = 'Đang tải dữ liệu...';
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'GET'
+                });
+
+                const result = await response.json();
+                
+                if (Array.isArray(result)) {
+                    resultDiv.textContent = `✅ Tìm thấy ${result.length} claim(s):\n\n` + 
+                        JSON.stringify(result, null, 2);
+                } else {
+                    resultDiv.textContent = '✅ Response:\n' + JSON.stringify(result, null, 2);
+                }
+                
+                if (result.error) {
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ Error: ' + error.message;
+            }
+        }
+
+        async function testConnection() {
+            const resultDiv = document.getElementById('connectionResult');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.textContent = 'Đang kiểm tra kết nối...';
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'GET'
+                });
+
+                const result = await response.json();
+                
+                if (result.error && result.error.includes('Connection failed')) {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = '❌ Database chưa được thiết lập!\n\n' +
+                        'Hướng dẫn:\n' +
+                        '1. Mở phpMyAdmin hoặc MySQL Workbench\n' +
+                        '2. Import file database.sql\n' +
+                        '3. Kiểm tra thông tin kết nối trong src/Database.php\n\n' +
+                        'Error: ' + result.error;
+                } else if (Array.isArray(result)) {
+                    resultDiv.textContent = '✅ Kết nối thành công!\n' +
+                        'Database: warranty_db\n' +
+                        'Số lượng claims: ' + result.length;
+                } else {
+                    resultDiv.textContent = '✅ Response:\n' + JSON.stringify(result, null, 2);
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ Không thể kết nối tới server!\n\n' +
+                    'Kiểm tra:\n' +
+                    '1. PHP server đang chạy tại http://localhost:8000\n' +
+                    '2. Không có lỗi CORS\n\n' +
+                    'Error: ' + error.message;
+            }
+        }
+
+        // Auto test connection khi load trang
+        window.onload = function() {
+            setTimeout(testConnection, 500);
+        };
+    </script>
+</body>
+</html>

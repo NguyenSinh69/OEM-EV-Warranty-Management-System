@@ -1,0 +1,6 @@
+.git
+.gitignore
+README.md
+test-api.html
+uploads/*
+!uploads/.gitkeep

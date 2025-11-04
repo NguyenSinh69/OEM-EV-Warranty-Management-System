@@ -1,0 +1,42 @@
+services:
+  # PHP API Service (Built-in server)
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.simple
+    container_name: warranty_api_simple
+    ports:
+      - "8080:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_NAME=warranty_db
+      - DB_USER=root
+      - DB_PASSWORD=root123
+    networks:
+      - warranty_network
+
+  # MySQL Database Service
+  db:
+    image: mysql:8.0
+    container_name: warranty_db_simple
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: warranty_db
+    volumes:
+      - ./database.sql:/docker-entrypoint-initdb.d/database.sql
+      - db_data:/var/lib/mysql
+    networks:
+      - warranty_network
+
+volumes:
+  db_data:
+
+networks:
+  warranty_network:
+    driver: bridge
