@@ -1,4 +1,4 @@
-FROM php:8.2-fpm
+FROM php:8.0-apache
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -8,33 +8,31 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     zip \
-    unzip \
-    libzip-dev \
-    mariadb-client
+    unzip
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Set working directory
-WORKDIR /var/www
+WORKDIR /var/www/html
 
-# Copy existing application directory contents
-COPY . /var/www
+# Copy application files
+COPY . .
 
-# Copy existing application directory permissions
-COPY --chown=www-data:www-data . /var/www
+# Install dependencies
+RUN composer install --no-interaction --no-dev --optimize-autoloader
 
-# Change current user to www-data
-USER www-data
+# Copy apache configuration
+COPY docker/apache.conf /etc/apache2/sites-enabled/000-default.conf
 
-# Expose port 8002
-EXPOSE 8002
+# Enable Apache modules
+RUN a2enmod rewrite
 
-# Start PHP-FPM server
-CMD ["php", "-S", "0.0.0.0:8002", "-t", "public"]
+# Change ownership of our applications
+RUN chown -R www-data:www-data /var/www/html

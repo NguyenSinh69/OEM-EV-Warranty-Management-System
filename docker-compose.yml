@@ -179,10 +179,10 @@ services:
       DB_DATABASE: evm_admin_db
       DB_USERNAME: evm_user
       DB_PASSWORD: evm_password
-    volumes:
-      - ./services/admin-service:/var/www
+    # volumes:
+    #   - ./services/admin-service:/var/www
     ports:
-      - "8004:8004"
+      - "8004:80"
     networks:
       - evm_network
 

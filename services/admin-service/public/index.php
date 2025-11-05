@@ -1,20 +1,59 @@
 <?php
-require_once dirname(__DIR__) . '/src/Core/ResponseHelper.php';
-require_once dirname(__DIR__) . '/src/Core/AuthMiddleware.php';
-require_once dirname(__DIR__) . '/src/app/Http/Controllers/AdminController.php';
 
-use App\Http\Controllers\AdminController;
-use Core\ResponseHelper;
+// Simple index file for admin service
+header('Content-Type: application/json');
 
-$uri = $_SERVER['REQUEST_URI'];
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 
-$controller = new AdminController();
-
-if ($uri === '/admin/roles' && $method === 'GET') {
-    $controller->getRoles();
-} elseif (preg_match('#^/admin/claims/(\d+)/decision$#', $uri, $matches) && $method === 'POST') {
-    $controller->decideClaim($matches[1]);
-} else {
-    ResponseHelper::json(['error' => 'Not Found'], 404);
+// Health check endpoint
+if ($uri === '/api/health') {
+    echo json_encode([
+        'status' => 'healthy',
+        'service' => 'admin-service',
+        'timestamp' => date('c'),
+        'version' => '1.0.0'
+    ]);
+    exit;
 }
+
+// Mock admin endpoints
+if (strpos($uri, '/api/admin') === 0) {
+    if ($uri === '/api/admin/stats' && $method === 'GET') {
+        echo json_encode([
+            'success' => true,
+            'data' => [
+                'total_customers' => 150,
+                'total_vehicles' => 89,
+                'total_claims' => 25,
+                'pending_claims' => 8,
+                'approved_claims' => 12,
+                'rejected_claims' => 5
+            ],
+            'message' => 'Admin statistics retrieved successfully'
+        ]);
+        exit;
+    }
+    
+    if ($uri === '/api/admin/users' && $method === 'GET') {
+        $mockUsers = [
+            ['id' => 1, 'email' => 'admin@evm.com', 'role' => 'admin', 'status' => 'active'],
+            ['id' => 2, 'email' => 'staff@evm.com', 'role' => 'evm_staff', 'status' => 'active'],
+            ['id' => 3, 'email' => 'sc-staff@evm.com', 'role' => 'sc_staff', 'status' => 'active']
+        ];
+        echo json_encode([
+            'success' => true,
+            'data' => $mockUsers,
+            'message' => 'Users retrieved successfully'
+        ]);
+        exit;
+    }
+}
+
+// Default response
+http_response_code(404);
+echo json_encode([
+    'success' => false,
+    'message' => 'Endpoint not found',
+    'service' => 'admin-service'
+]);
