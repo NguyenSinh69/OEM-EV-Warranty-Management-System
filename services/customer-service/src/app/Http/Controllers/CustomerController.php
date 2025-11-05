@@ -16,18 +16,12 @@ class CustomerController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        // Kiểm tra xem có query ?email=... hay không
-        if ($request->has('email')) {
-            $email = $request->query('email');
-            
-            // Logic lọc theo email (yêu cầu của ticket)
-            $customers = Customer::where('email', $email)->get();
-            
-            return response()->json([
-                'success' => true,
-                'data' => $customers
-            ]);
-        }
+        $customers = Customer::when($request->search, function ($query, $search) {
+                return $query->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%")
+                            ->orWhere('phone', 'like', "%{$search}%");
+            })
+            ->paginate(15);
 
         // Nếu không có ?email=, trả về tất cả
         $allCustomers = Customer::all();
@@ -36,12 +30,6 @@ class CustomerController extends Controller
             'data' => $allCustomers
         ]);
     }
-
-    /**
-     * Store a newly created customer.
-     * (Yêu cầu: POST /customers)
-     * (Yêu cầu: 400 khi trùng)
-     */
     public function store(Request $request): JsonResponse
     {
         // 1. Validate dữ liệu
@@ -93,13 +81,80 @@ class CustomerController extends Controller
         if (!$customer) {
             return response()->json([
                 'success' => false,
-                'message' => 'Không tìm thấy customer'
-            ], 404); // 404 Not Found
+                'message' => 'Customer not found'
+            ], 404);
         }
 
         return response()->json([
             'success' => true,
-            'data' => $customer
+            'data' => $customer,
+            'message' => 'Customer retrieved successfully'
         ]);
     }
+
+    /**
+     * Update the specified customer
+     */
+    public function update(Request $request, $id): JsonResponse
+    {
+        $customer = Customer::find($id);
+
+        if (!$customer) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Customer not found'
+            ], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|string|email|max:255|unique:customers,email,' . $id,
+            'phone' => 'sometimes|required|string|max:20|unique:customers,phone,' . $id,
+            'address' => 'sometimes|required|string|max:500',
+            'date_of_birth' => 'sometimes|required|date',
+            'id_number' => 'sometimes|required|string|max:20|unique:customers,id_number,' . $id,
+            'status' => 'sometimes|required|in:active,inactive,suspended',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $customer->update($request->only([
+            'name', 'email', 'phone', 'address', 'date_of_birth', 'id_number', 'status'
+        ]));
+
+        return response()->json([
+            'success' => true,
+            'data' => $customer,
+            'message' => 'Customer updated successfully'
+        ]);
+    }
+
+    /**
+     * Remove the specified customer
+     */
+    public function destroy($id): JsonResponse
+    {
+        $customer = Customer::find($id);
+
+        if (!$customer) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Customer not found'
+            ], 404);
+        }
+
+        $customer->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Customer deleted successfully'
+        ]);
+    }
+
 }
