@@ -8,20 +8,18 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Customer extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    // (Yêu cầu: id, name, email, phone)
     protected $fillable = [
         'name',
         'email',
         'phone',
-        'address',
-        'date_of_birth',
-        'id_number',
-        'password',
-        'status',
-        'avatar',
-        'email_verified_at',
-        'phone_verified_at'
     ];
 
     protected $hidden = [

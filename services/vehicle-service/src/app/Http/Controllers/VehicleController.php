@@ -5,9 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Vehicle; // Import Model (File 3)
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Vehicle;
 
 class VehicleController extends Controller
 {
+    public function __construct()
+    {
+        // Initialize mock data on first load
+        Vehicle::initializeMockData();
+    }
+
     /**
      * API 1: Đăng ký xe theo VIN (Nhiệm vụ 2)
      * (Tên là 'register' để khớp với api.php)
