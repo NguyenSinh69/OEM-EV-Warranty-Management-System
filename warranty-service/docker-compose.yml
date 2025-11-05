@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  php:
+    build: .
+    container_name: warranty-php
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - "8000:80"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_NAME=warranty
+      - DB_USER=root
+      - DB_PASS=password
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0.35
+    platform: linux/amd64
+    container_name: warranty-db
+    environment:
+      MYSQL_DATABASE: warranty
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./migrations:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+
+volumes:
+  db-data:

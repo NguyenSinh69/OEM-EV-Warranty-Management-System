@@ -1,6 +1,10 @@
 <?php
 
-// Simple index file for vehicle service
+// Vehicle Service Entry Point
+require_once __DIR__ . '/../src/bootstrap.php';
+
+use App\Http\Controllers\VehicleController;
+
 header('Content-Type: application/json');
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -51,62 +55,61 @@ $mockVehicles = [
     ]
 ];
 
-// Vehicles endpoint
+// Vehicles endpoint using new controller
 if (strpos($uri, '/api/vehicles') === 0) {
-    if ($method === 'GET') {
-        if (preg_match('/\/api\/vehicles\/([A-Z0-9]+)\/warranty/', $uri, $matches)) {
-            // Get warranty info for specific VIN
+    $controller = new VehicleController();
+    $request = new Request();
+    
+    try {
+        if ($method === 'POST' && $uri === '/api/vehicles') {
+            // POST /vehicles - Create new vehicle
+            $result = $controller->store($request);
+            echo $result->getContent();
+        } elseif ($method === 'GET' && preg_match('/\/api\/vehicles\/([A-Za-z0-9]+)$/', $uri, $matches)) {
+            // GET /vehicles/{vin} - Get vehicle by VIN
             $vin = $matches[1];
-            echo json_encode([
-                'success' => true,
-                'data' => [
-                    'vin' => $vin,
-                    'warranty_active' => true,
-                    'warranty_start_date' => '2024-01-15',
-                    'warranty_end_date' => '2026-01-15',
-                    'remaining_days' => 400,
-                    'coverage' => [
-                        'battery' => ['covered' => true, 'duration' => '8 năm hoặc 160,000 km'],
-                        'motor' => ['covered' => true, 'duration' => '3 năm hoặc 100,000 km'],
-                        'electrical' => ['covered' => true, 'duration' => '2 năm hoặc 50,000 km']
-                    ]
-                ],
-                'message' => 'Vehicle warranty information retrieved successfully'
-            ]);
-        } elseif (preg_match('/\/api\/vehicles\/([A-Z0-9]+)$/', $uri, $matches)) {
-            // Get specific vehicle by VIN
+            $result = $controller->show($vin);
+            echo $result->getContent();
+        } elseif ($method === 'GET' && $uri === '/api/vehicles') {
+            // GET /vehicles or GET /vehicles?customer_id=xxx
+            $result = $controller->index($request);
+            echo $result->getContent();
+        } elseif ($method === 'PUT' && preg_match('/\/api\/vehicles\/([A-Za-z0-9]+)$/', $uri, $matches)) {
+            // PUT /vehicles/{vin} - Update vehicle
             $vin = $matches[1];
-            $vehicle = null;
-            foreach ($mockVehicles as $v) {
-                if ($v['vin'] === $vin) {
-                    $vehicle = $v;
-                    break;
-                }
-            }
-            echo json_encode([
-                'success' => true,
-                'data' => $vehicle ?: ['message' => 'Vehicle not found'],
-                'message' => $vehicle ? 'Vehicle retrieved successfully' : 'Vehicle not found'
-            ]);
+            $result = $controller->update($request, $vin);
+            echo $result->getContent();
         } else {
-            // List all vehicles
-            echo json_encode([
-                'success' => true,
-                'data' => $mockVehicles,
-                'message' => 'Vehicles retrieved successfully'
-            ]);
+            // Handle legacy warranty endpoint
+            if (preg_match('/\/api\/vehicles\/([A-Z0-9]+)\/warranty/', $uri, $matches)) {
+                $vin = $matches[1];
+                echo json_encode([
+                    'success' => true,
+                    'data' => [
+                        'vin' => $vin,
+                        'warranty_active' => true,
+                        'warranty_start_date' => '2024-01-15',
+                        'warranty_end_date' => '2026-01-15',
+                        'remaining_days' => 400,
+                        'coverage' => [
+                            'battery' => ['covered' => true, 'duration' => '8 năm hoặc 160,000 km'],
+                            'motor' => ['covered' => true, 'duration' => '3 năm hoặc 100,000 km'],
+                            'electrical' => ['covered' => true, 'duration' => '2 năm hoặc 50,000 km']
+                        ]
+                    ],
+                    'message' => 'Vehicle warranty information retrieved successfully'
+                ]);
+            }
         }
-    } elseif ($method === 'POST') {
-        $input = json_decode(file_get_contents('php://input'), true);
-        $newVehicle = array_merge($input, [
-            'id' => rand(1000, 9999),
-            'status' => 'active',
-            'created_at' => date('c')
-        ]);
+    } catch (Exception $e) {
+        http_response_code(500);
         echo json_encode([
-            'success' => true,
-            'data' => $newVehicle,
-            'message' => 'Vehicle registered successfully'
+            'success' => false,
+            'error' => [
+                'code' => 'INTERNAL_ERROR',
+                'message' => $e->getMessage()
+            ],
+            'timestamp' => date('c')
         ]);
     }
     exit;

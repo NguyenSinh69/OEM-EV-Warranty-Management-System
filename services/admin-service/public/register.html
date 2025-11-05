@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Đăng ký tài khoản - OEM EV Warranty</title>
+    <link href="/vendor/bootstrap/bootstrap.css" rel="stylesheet" />
+    <link href="/css/style.css" rel="stylesheet" />
+    <style>
+      body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 0;
+      }
+      .register-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        width: 100%;
+        max-width: 450px;
+      }
+      .register-header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+      .register-header h2 {
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+      .register-header p {
+        color: #666;
+        margin: 0;
+      }
+      .btn-register {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        border: none;
+        width: 100%;
+        padding: 12px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+      .btn-register:hover {
+        background: linear-gradient(45deg, #5a6fd8, #6a4190);
+        transform: translateY(-1px);
+      }
+      .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+      }
+      .login-link {
+        text-align: center;
+        margin-top: 1rem;
+      }
+      .login-link a {
+        color: #667eea;
+        text-decoration: none;
+      }
+      .login-link a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="register-card">
+      <div class="register-header">
+        <h2>OEM EV Warranty</h2>
+        <p>Tạo tài khoản mới</p>
+      </div>
+
+      <form id="registerForm">
+        <div class="mb-3">
+          <label for="username" class="form-label">Tên đăng nhập *</label>
+          <input
+            type="text"
+            class="form-control"
+            id="username"
+            name="username"
+            required
+            minlength="3"
+            maxlength="50"
+          />
+          <div class="form-text">Tối thiểu 3 ký tự</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="password" class="form-label">Mật khẩu *</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            name="password"
+            required
+            minlength="6"
+          />
+          <div class="form-text">Tối thiểu 6 ký tự</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="confirmPassword" class="form-label"
+            >Xác nhận mật khẩu *</label
+          >
+          <input
+            type="password"
+            class="form-control"
+            id="confirmPassword"
+            name="confirmPassword"
+            required
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="role" class="form-label">Vai trò *</label>
+          <select class="form-select" id="role" name="role" required>
+            <option value="">-- Chọn vai trò --</option>
+            <option value="SC_Staff">Nhân viên trung tâm dịch vụ</option>
+            <option value="SC_Technician">Kỹ thuật viên trung tâm</option>
+            <option value="EVM_Staff">Nhân viên EVM</option>
+            <option value="Admin">Quản trị viên</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <div id="registerMessage"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-register">
+          <span id="registerText">Đăng ký</span>
+          <span
+            id="registerSpinner"
+            class="spinner-border spinner-border-sm d-none ms-2"
+          ></span>
+        </button>
+      </form>
+
+      <div class="login-link">
+        <small class="text-muted">
+          Đã có tài khoản?
+          <a href="/login.html">Đăng nhập ngay</a>
+        </small>
+      </div>
+
+      <div class="text-center mt-3">
+        <small class="text-muted">
+          Tài khoản demo có sẵn: admin / admin123
+        </small>
+      </div>
+    </div>
+
+    <script>
+      function api(path, opts = {}) {
+        const headers = opts.headers || {};
+        headers["Content-Type"] = headers["Content-Type"] || "application/json";
+        opts.headers = headers;
+        const baseUrl = window.location.origin;
+        return fetch(baseUrl + path, opts).then(async (res) => {
+          const text = await res.text();
+          try {
+            return JSON.parse(text);
+          } catch (e) {
+            return text;
+          }
+        });
+      }
+
+      function showMessage(message, type = "danger") {
+        const msgDiv = document.getElementById("registerMessage");
+        msgDiv.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show" role="alert">
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>`;
+      }
+
+      function setLoading(loading) {
+        const button = document.querySelector(".btn-register");
+        const text = document.getElementById("registerText");
+        const spinner = document.getElementById("registerSpinner");
+
+        if (loading) {
+          button.disabled = true;
+          text.textContent = "Đang tạo tài khoản...";
+          spinner.classList.remove("d-none");
+        } else {
+          button.disabled = false;
+          text.textContent = "Đăng ký";
+          spinner.classList.add("d-none");
+        }
+      }
+
+      function validateForm(data) {
+        if (!data.username || data.username.length < 3) {
+          showMessage("Tên đăng nhập phải có ít nhất 3 ký tự");
+          return false;
+        }
+
+        if (!data.password || data.password.length < 6) {
+          showMessage("Mật khẩu phải có ít nhất 6 ký tự");
+          return false;
+        }
+
+        if (data.password !== data.confirmPassword) {
+          showMessage("Mật khẩu xác nhận không khớp");
+          return false;
+        }
+
+        if (!data.role) {
+          showMessage("Vui lòng chọn vai trò");
+          return false;
+        }
+
+        return true;
+      }
+
+      document
+        .getElementById("registerForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const formData = new FormData(e.target);
+          const data = Object.fromEntries(formData.entries());
+
+          // Client-side validation
+          if (!validateForm(data)) {
+            return;
+          }
+
+          // Remove confirmPassword before sending to server
+          delete data.confirmPassword;
+
+          setLoading(true);
+
+          try {
+            const response = await api("/api/users", {
+              method: "POST",
+              body: JSON.stringify(data),
+            });
+
+            if (response.success || response.message) {
+              showMessage(
+                "Tạo tài khoản thành công! Đang chuyển đến trang đăng nhập...",
+                "success"
+              );
+              setTimeout(() => {
+                window.location.href = "/login.html";
+              }, 2000);
+            } else {
+              showMessage(response.error || "Không thể tạo tài khoản");
+            }
+          } catch (err) {
+            showMessage("Lỗi kết nối. Vui lòng thử lại.");
+            console.error(err);
+          } finally {
+            setLoading(false);
+          }
+        });
+
+      // Auto-focus username field
+      document.getElementById("username").focus();
+
+      // Real-time password confirmation validation
+      document
+        .getElementById("confirmPassword")
+        .addEventListener("input", function () {
+          const password = document.getElementById("password").value;
+          const confirmPassword = this.value;
+
+          if (confirmPassword && password !== confirmPassword) {
+            this.setCustomValidity("Mật khẩu xác nhận không khớp");
+            this.classList.add("is-invalid");
+          } else {
+            this.setCustomValidity("");
+            this.classList.remove("is-invalid");
+          }
+        });
+    </script>
+  </body>
+</html>

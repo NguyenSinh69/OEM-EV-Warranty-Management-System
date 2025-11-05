@@ -1,0 +1,4 @@
+﻿id,username,role,created_at
+1,admin,Admin,"2025-10-29 07:23:25"
+2,test_user,SC_Staff,"2025-11-02 21:49:44"
+3,"Test User",,"2025-11-02 22:36:44"

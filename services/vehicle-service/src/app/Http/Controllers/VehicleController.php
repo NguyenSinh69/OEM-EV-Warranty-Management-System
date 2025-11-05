@@ -5,182 +5,222 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Vehicle;
 
 class VehicleController extends Controller
 {
+    public function __construct()
+    {
+        // Initialize mock data on first load
+        Vehicle::initializeMockData();
+    }
+
     /**
      * Display a listing of vehicles
+     * GET /vehicles or GET /vehicles?customer_id=xxx
      */
     public function index(Request $request): JsonResponse
     {
-        // Mock vehicle data
-        $vehicles = [
-            [
-                'id' => 1,
-                'vin' => 'VF3ABCDEF12345678',
-                'model' => 'VinFast VF8',
-                'year' => 2024,
-                'color' => 'Đen Kim Cương',
-                'customer_id' => 1,
-                'purchase_date' => '2024-01-15',
-                'warranty_start_date' => '2024-01-15',
-                'warranty_end_date' => '2026-01-15',
-                'status' => 'active',
-                'mileage' => 5000,
-                'battery_capacity' => '87.7 kWh',
-                'motor_power' => '300 kW'
-            ],
-            [
-                'id' => 2,
-                'vin' => 'VF3GHIJKL87654321',
-                'model' => 'VinFast VF9',
-                'year' => 2024,
-                'color' => 'Trắng Ngọc Trai',
-                'customer_id' => 2,
-                'purchase_date' => '2024-02-20',
-                'warranty_start_date' => '2024-02-20',
-                'warranty_end_date' => '2026-02-20',
-                'status' => 'active',
-                'mileage' => 3000,
-                'battery_capacity' => '123 kWh',
-                'motor_power' => '300 kW'
-            ]
-        ];
+        try {
+            $vehicles = [];
+            
+            if ($request->has('customer_id')) {
+                $vehicles = Vehicle::findByCustomerId($request->get('customer_id'));
+            } else {
+                $vehicles = Vehicle::all();
+            }
+            
+            // Convert to array format
+            $vehicleData = array_map(function($vehicle) {
+                return $vehicle->toArray();
+            }, $vehicles);
 
-        // Apply filters
-        if ($request->customer_id) {
-            $vehicles = array_filter($vehicles, function($vehicle) use ($request) {
-                return $vehicle['customer_id'] == $request->customer_id;
-            });
+            return response()->json([
+                'success' => true,
+                'data' => $vehicleData,
+                'message' => 'Vehicles retrieved successfully',
+                'timestamp' => date('c')
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => [
+                    'code' => 'VEHICLE_RETRIEVAL_ERROR',
+                    'message' => $e->getMessage(),
+                    'details' => []
+                ],
+                'timestamp' => date('c')
+            ], 500);
         }
-
-        if ($request->search) {
-            $search = strtolower($request->search);
-            $vehicles = array_filter($vehicles, function($vehicle) use ($search) {
-                return strpos(strtolower($vehicle['vin']), $search) !== false ||
-                       strpos(strtolower($vehicle['model']), $search) !== false;
-            });
-        }
-
-        return response()->json([
-            'success' => true,
-            'data' => array_values($vehicles),
-            'message' => 'Vehicles retrieved successfully'
-        ]);
     }
 
     /**
      * Store a newly created vehicle
+     * POST /vehicles
      */
     public function store(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'vin' => 'required|string|size:17|unique:vehicles',
-            'model' => 'required|string|max:100',
-            'year' => 'required|integer|min:2020|max:2030',
-            'color' => 'required|string|max:50',
-            'customer_id' => 'required|integer',
-            'purchase_date' => 'required|date',
-            'warranty_start_date' => 'required|date',
-            'warranty_end_date' => 'required|date|after:warranty_start_date',
-        ]);
-
-        if ($validator->fails()) {
+        try {
+            $data = $request->all();
+            
+            // Basic validation
+            if (empty($data['vin'])) {
+                return response()->json([
+                    'success' => false,
+                    'error' => [
+                        'code' => 'VALIDATION_ERROR',
+                        'message' => 'VIN is required',
+                        'details' => ['vin' => 'VIN field is required']
+                    ],
+                    'timestamp' => date('c')
+                ], 400);
+            }
+            
+            if (empty($data['model'])) {
+                return response()->json([
+                    'success' => false,
+                    'error' => [
+                        'code' => 'VALIDATION_ERROR',
+                        'message' => 'Model is required',
+                        'details' => ['model' => 'Model field is required']
+                    ],
+                    'timestamp' => date('c')
+                ], 400);
+            }
+            
+            if (empty($data['year']) || !is_numeric($data['year'])) {
+                return response()->json([
+                    'success' => false,
+                    'error' => [
+                        'code' => 'VALIDATION_ERROR',
+                        'message' => 'Year is required and must be numeric',
+                        'details' => ['year' => 'Year field is required and must be numeric']
+                    ],
+                    'timestamp' => date('c')
+                ], 400);
+            }
+            
+            $vehicle = Vehicle::create($data);
+            
+            return response()->json([
+                'success' => true,
+                'data' => $vehicle->toArray(),
+                'message' => 'Vehicle created successfully',
+                'timestamp' => date('c')
+            ], 201);
+            
+        } catch (\Exception $e) {
+            $statusCode = $e->getCode() ?: 500;
+            $errorCode = 'VEHICLE_CREATION_ERROR';
+            
+            if ($statusCode == 400) {
+                $errorCode = 'VALIDATION_ERROR';
+            } elseif ($statusCode == 409) {
+                $errorCode = 'VEHICLE_EXISTS';
+            }
+            
             return response()->json([
                 'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 422);
+                'error' => [
+                    'code' => $errorCode,
+                    'message' => $e->getMessage(),
+                    'details' => []
+                ],
+                'timestamp' => date('c')
+            ], $statusCode);
         }
-
-        // Mock vehicle creation
-        $vehicle = array_merge($request->all(), [
-            'id' => rand(1000, 9999),
-            'status' => 'active',
-            'mileage' => 0,
-            'created_at' => now()
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'data' => $vehicle,
-            'message' => 'Vehicle registered successfully'
-        ], 201);
     }
 
     /**
      * Display the specified vehicle
+     * GET /vehicles/{vin}
      */
     public function show($vin): JsonResponse
     {
-        // Mock vehicle lookup
-        $vehicle = [
-            'id' => 1,
-            'vin' => $vin,
-            'model' => 'VinFast VF8',
-            'year' => 2024,
-            'color' => 'Đen Kim Cương',
-            'customer_id' => 1,
-            'purchase_date' => '2024-01-15',
-            'warranty_start_date' => '2024-01-15',
-            'warranty_end_date' => '2026-01-15',
-            'status' => 'active',
-            'mileage' => 5000,
-            'battery_capacity' => '87.7 kWh',
-            'motor_power' => '300 kW',
-            'specifications' => [
-                'range' => '425 km',
-                'top_speed' => '200 km/h',
-                'acceleration' => '5.5s (0-100km/h)',
-                'charging_time' => '35 phút (10-80%)',
-                'drive_type' => 'AWD'
-            ]
-        ];
+        try {
+            $vehicle = Vehicle::findByVin($vin);
+            
+            if (!$vehicle) {
+                return response()->json([
+                    'success' => false,
+                    'error' => [
+                        'code' => 'VEHICLE_NOT_FOUND',
+                        'message' => 'Vehicle not found',
+                        'details' => ['vin' => 'Vehicle with this VIN does not exist']
+                    ],
+                    'timestamp' => date('c')
+                ], 404);
+            }
 
-        return response()->json([
-            'success' => true,
-            'data' => $vehicle,
-            'message' => 'Vehicle retrieved successfully'
-        ]);
+            return response()->json([
+                'success' => true,
+                'data' => $vehicle->toArray(),
+                'message' => 'Vehicle retrieved successfully',
+                'timestamp' => date('c')
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => [
+                    'code' => 'VEHICLE_RETRIEVAL_ERROR',
+                    'message' => $e->getMessage(),
+                    'details' => []
+                ],
+                'timestamp' => date('c')
+            ], 500);
+        }
     }
 
     /**
      * Update the specified vehicle
+     * PUT /vehicles/{vin}
      */
     public function update(Request $request, $vin): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'model' => 'sometimes|required|string|max:100',
-            'color' => 'sometimes|required|string|max:50',
-            'status' => 'sometimes|required|in:active,inactive,maintenance,sold',
-            'mileage' => 'sometimes|required|integer|min:0',
-        ]);
+        try {
+            $vehicle = Vehicle::findByVin($vin);
+            
+            if (!$vehicle) {
+                return response()->json([
+                    'success' => false,
+                    'error' => [
+                        'code' => 'VEHICLE_NOT_FOUND',
+                        'message' => 'Vehicle not found',
+                        'details' => ['vin' => 'Vehicle with this VIN does not exist']
+                    ],
+                    'timestamp' => date('c')
+                ], 404);
+            }
+            
+            $data = $request->all();
+            $vehicle->update($data);
 
-        if ($validator->fails()) {
+            return response()->json([
+                'success' => true,
+                'data' => $vehicle->toArray(),
+                'message' => 'Vehicle updated successfully',
+                'timestamp' => date('c')
+            ]);
+            
+        } catch (\Exception $e) {
+            $statusCode = $e->getCode() ?: 500;
+            $errorCode = 'VEHICLE_UPDATE_ERROR';
+            
+            if ($statusCode == 400) {
+                $errorCode = 'VALIDATION_ERROR';
+            }
+            
             return response()->json([
                 'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 422);
+                'error' => [
+                    'code' => $errorCode,
+                    'message' => $e->getMessage(),
+                    'details' => []
+                ],
+                'timestamp' => date('c')
+            ], $statusCode);
         }
-
-        // Mock vehicle update
-        $vehicle = [
-            'id' => 1,
-            'vin' => $vin,
-            'model' => $request->get('model', 'VinFast VF8'),
-            'year' => 2024,
-            'color' => $request->get('color', 'Đen Kim Cương'),
-            'status' => $request->get('status', 'active'),
-            'mileage' => $request->get('mileage', 5000),
-            'updated_at' => now()
-        ];
-
-        return response()->json([
-            'success' => true,
-            'data' => $vehicle,
-            'message' => 'Vehicle updated successfully'
-        ]);
     }
 
     /**
