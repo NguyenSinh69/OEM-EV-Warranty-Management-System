@@ -9,11 +9,6 @@ use App\Http\Controllers\CustomerController;
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
 */
 
 // Health Check
@@ -42,14 +37,11 @@ Route::prefix('auth')->group(function () {
 // Customer Routes (Protected)
 Route::middleware('jwt.auth')->prefix('customers')->group(function () {
     Route::get('/', [CustomerController::class, 'index']);
-    Route::post('/', [CustomerController::class, 'store']);
+    Route::post('/', [CustomerController::class, 'store']); // Đây là API cho Ticket #21
     Route::get('/{id}', [CustomerController::class, 'show']);
     Route::put('/{id}', [CustomerController::class, 'update']);
     Route::delete('/{id}', [CustomerController::class, 'destroy']);
     
-    // Customer specific resources
-    Route::get('/{id}/vehicles', [CustomerController::class, 'getVehicles']);
-    Route::get('/{id}/warranties', [CustomerController::class, 'getWarranties']);
 });
 
 // Public Routes for other services

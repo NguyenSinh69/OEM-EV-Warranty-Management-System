@@ -17,11 +17,10 @@ class CustomerController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $customers = Customer::with('vehicles')
-            ->when($request->search, function ($query, $search) {
+        $customers = Customer::when($request->search, function ($query, $search) {
                 return $query->where('name', 'like', "%{$search}%")
-                           ->orWhere('email', 'like', "%{$search}%")
-                           ->orWhere('phone', 'like', "%{$search}%");
+                            ->orWhere('email', 'like', "%{$search}%")
+                            ->orWhere('phone', 'like', "%{$search}%");
             })
             ->paginate(15);
 
@@ -31,10 +30,6 @@ class CustomerController extends Controller
             'message' => 'Customers retrieved successfully'
         ]);
     }
-
-    /**
-     * Store a newly created customer
-     */
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -78,7 +73,7 @@ class CustomerController extends Controller
      */
     public function show($id): JsonResponse
     {
-        $customer = Customer::with(['vehicles', 'warranties'])->find($id);
+        $customer = Customer::find($id);
 
         if (!$customer) {
             return response()->json([
@@ -159,45 +154,4 @@ class CustomerController extends Controller
         ]);
     }
 
-    /**
-     * Get customer's vehicles
-     */
-    public function getVehicles($id): JsonResponse
-    {
-        $customer = Customer::with('vehicles')->find($id);
-
-        if (!$customer) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Customer not found'
-            ], 404);
-        }
-
-        return response()->json([
-            'success' => true,
-            'data' => $customer->vehicles,
-            'message' => 'Customer vehicles retrieved successfully'
-        ]);
-    }
-
-    /**
-     * Get customer's warranty claims
-     */
-    public function getWarranties($id): JsonResponse
-    {
-        $customer = Customer::with('warranties')->find($id);
-
-        if (!$customer) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Customer not found'
-            ], 404);
-        }
-
-        return response()->json([
-            'success' => true,
-            'data' => $customer->warranties,
-            'message' => 'Customer warranties retrieved successfully'
-        ]);
-    }
 }
