@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Đăng nhập - OEM EV Warranty</title>
+    <link href="/vendor/bootstrap/bootstrap.css" rel="stylesheet" />
+    <link href="/css/style.css" rel="stylesheet" />
+    <style>
+      body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .login-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        width: 100%;
+        max-width: 400px;
+      }
+      .login-header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+      .login-header h2 {
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+      .login-header p {
+        color: #666;
+        margin: 0;
+      }
+      .btn-login {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        border: none;
+        width: 100%;
+        padding: 12px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+      .btn-login:hover {
+        background: linear-gradient(45deg, #5a6fd8, #6a4190);
+        transform: translateY(-1px);
+      }
+      .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-card">
+      <div class="login-header">
+        <h2>OEM EV Warranty</h2>
+        <p>Đăng nhập vào hệ thống quản lý</p>
+      </div>
+
+      <form id="loginForm">
+        <div class="mb-3">
+          <label for="username" class="form-label">Tên đăng nhập</label>
+          <input
+            type="text"
+            class="form-control"
+            id="username"
+            name="username"
+            required
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="password" class="form-label">Mật khẩu</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            name="password"
+            required
+          />
+        </div>
+
+        <div class="mb-3">
+          <div id="loginMessage"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-login">
+          <span id="loginText">Đăng nhập</span>
+          <span
+            id="loginSpinner"
+            class="spinner-border spinner-border-sm d-none ms-2"
+          ></span>
+        </button>
+      </form>
+
+      <div class="text-center mt-3">
+        <small class="text-muted">
+          Chưa có tài khoản?
+          <a href="/register.html" style="color: #667eea; text-decoration: none"
+            >Đăng ký ngay</a
+          >
+        </small>
+      </div>
+
+      <div class="text-center mt-2">
+        <small class="text-muted"> Demo: admin / admin123 </small>
+      </div>
+    </div>
+
+    <script>
+      function api(path, opts = {}) {
+        const headers = opts.headers || {};
+        headers["Content-Type"] = headers["Content-Type"] || "application/json";
+        opts.headers = headers;
+        const baseUrl = window.location.origin;
+        return fetch(baseUrl + path, opts).then(async (res) => {
+          const text = await res.text();
+          try {
+            return JSON.parse(text);
+          } catch (e) {
+            return text;
+          }
+        });
+      }
+
+      function showMessage(message, type = "danger") {
+        const msgDiv = document.getElementById("loginMessage");
+        msgDiv.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show" role="alert">
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>`;
+      }
+
+      function setLoading(loading) {
+        const button = document.querySelector(".btn-login");
+        const text = document.getElementById("loginText");
+        const spinner = document.getElementById("loginSpinner");
+
+        if (loading) {
+          button.disabled = true;
+          text.textContent = "Đang đăng nhập...";
+          spinner.classList.remove("d-none");
+        } else {
+          button.disabled = false;
+          text.textContent = "Đăng nhập";
+          spinner.classList.add("d-none");
+        }
+      }
+
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const formData = new FormData(e.target);
+          const data = Object.fromEntries(formData.entries());
+
+          setLoading(true);
+
+          try {
+            const response = await api("/api/login", {
+              method: "POST",
+              body: JSON.stringify(data),
+            });
+
+            console.log("Login response:", response);
+
+            if (response.user || response.message) {
+              showMessage(
+                "Đăng nhập thành công! Đang chuyển hướng...",
+                "success"
+              );
+              setTimeout(() => {
+                window.location.href = "/index.html";
+              }, 1000);
+            } else {
+              showMessage(response.error || "Đăng nhập thất bại");
+            }
+          } catch (err) {
+            console.error("Login error:", err);
+            showMessage("Lỗi kết nối. Vui lòng thử lại.");
+          } finally {
+            setLoading(false);
+          }
+        });
+
+      // Auto-focus username field
+      document.getElementById("username").focus();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,249 @@
+version: '3.3'
+
+services:
+  # Kong API Gateway
+  kong-database:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: kong
+      POSTGRES_USER: kong
+      POSTGRES_PASSWORD: kong_password
+    volumes:
+      - kong_data:/var/lib/postgresql/data
+    networks:
+      - evm_network
+
+  kong-migrations:
+    image: kong:3.4
+    command: kong migrations bootstrap
+    depends_on:
+      - kong-database
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-database
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong_password
+      KONG_PG_DATABASE: kong
+    networks:
+      - evm_network
+
+  kong:
+    image: kong:3.4
+    user: "kong"
+    depends_on:
+      - kong-database
+      - kong-migrations
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-database
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong_password
+      KONG_PG_DATABASE: kong
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: "0.0.0.0:8001"
+      KONG_PROXY_LISTEN: "0.0.0.0:8000"
+      KONG_DECLARATIVE_CONFIG: /kong/declarative/kong.yml
+    volumes:
+      - ./api-gateway/kong:/kong/declarative
+    ports:
+      - "8000:8000"  # Kong Proxy
+      - "8010:8001"  # Kong Admin API
+    networks:
+      - evm_network
+
+  # Customer Service
+  customer-db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: evm_customer_db
+      MYSQL_USER: evm_user
+      MYSQL_PASSWORD: evm_password
+      MYSQL_ROOT_PASSWORD: root_password
+    volumes:
+      - customer_db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - evm_network
+
+  customer-service:
+    build:
+      context: ./services/customer-service
+      dockerfile: Dockerfile
+    depends_on:
+      - customer-db
+    environment:
+      DB_HOST: customer-db
+      DB_DATABASE: evm_customer_db
+      DB_USERNAME: evm_user
+      DB_PASSWORD: evm_password
+    volumes:
+      - ./services/customer-service:/var/www
+    ports:
+      - "8001:8001"
+    networks:
+      - evm_network
+
+  # Warranty Service
+  warranty-db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: evm_warranty_db
+      MYSQL_USER: evm_user
+      MYSQL_PASSWORD: evm_password
+      MYSQL_ROOT_PASSWORD: root_password
+    volumes:
+      - warranty_db_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    networks:
+      - evm_network
+
+  warranty-service:
+    build:
+      context: ./services/warranty-service
+      dockerfile: Dockerfile
+    depends_on:
+      - warranty-db
+    environment:
+      DB_HOST: warranty-db
+      DB_DATABASE: evm_warranty_db
+      DB_USERNAME: evm_user
+      DB_PASSWORD: evm_password
+    volumes:
+      - ./services/warranty-service:/var/www
+    ports:
+      - "8002:8002"
+    networks:
+      - evm_network
+
+  # Vehicle Service
+  vehicle-db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: evm_vehicle_db
+      MYSQL_USER: evm_user
+      MYSQL_PASSWORD: evm_password
+      MYSQL_ROOT_PASSWORD: root_password
+    volumes:
+      - vehicle_db_data:/var/lib/mysql
+    ports:
+      - "3308:3306"
+    networks:
+      - evm_network
+
+  vehicle-service:
+    build:
+      context: ./services/vehicle-service
+      dockerfile: Dockerfile
+    depends_on:
+      - vehicle-db
+    environment:
+      DB_HOST: vehicle-db
+      DB_DATABASE: evm_vehicle_db
+      DB_USERNAME: evm_user
+      DB_PASSWORD: evm_password
+    volumes:
+      - ./services/vehicle-service:/var/www
+    ports:
+      - "8003:8003"
+    networks:
+      - evm_network
+
+  # Admin Service
+  admin-db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: evm_admin_db
+      MYSQL_USER: evm_user
+      MYSQL_PASSWORD: evm_password
+      MYSQL_ROOT_PASSWORD: root_password
+    volumes:
+      - admin_db_data:/var/lib/mysql
+    ports:
+      - "3309:3306"
+    networks:
+      - evm_network
+
+  admin-service:
+    build:
+      context: ./services/admin-service
+      dockerfile: Dockerfile
+    depends_on:
+      - admin-db
+    environment:
+      DB_HOST: admin-db
+      DB_DATABASE: evm_admin_db
+      DB_USERNAME: evm_user
+      DB_PASSWORD: evm_password
+    # volumes:
+    #   - ./services/admin-service:/var/www
+    ports:
+      - "8004:80"
+    networks:
+      - evm_network
+
+  # Notification Service
+  notification-db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: evm_notification_db
+      MYSQL_USER: evm_user
+      MYSQL_PASSWORD: evm_password
+      MYSQL_ROOT_PASSWORD: root_password
+    volumes:
+      - notification_db_data:/var/lib/mysql
+    ports:
+      - "3310:3306"
+    networks:
+      - evm_network
+
+  notification-service:
+    build:
+      context: ./services/notification-service
+      dockerfile: Dockerfile
+    depends_on:
+      - notification-db
+    environment:
+      DB_HOST: notification-db
+      DB_DATABASE: evm_notification_db
+      DB_USERNAME: evm_user
+      DB_PASSWORD: evm_password
+    volumes:
+      - ./services/notification-service:/var/www
+    ports:
+      - "8005:8005"
+    networks:
+      - evm_network
+
+  # Redis for Caching (Optional)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - evm_network
+
+  # Mail Service (for development)
+  mailpit:
+    image: axllent/mailpit
+    ports:
+      - "8025:8025"  # Web UI
+      - "1025:1025"  # SMTP
+    networks:
+      - evm_network
+
+volumes:
+  kong_data:
+  customer_db_data:
+  warranty_db_data:
+  vehicle_db_data:
+  admin_db_data:
+  notification_db_data:
+
+networks:
+  evm_network:
+    driver: bridge

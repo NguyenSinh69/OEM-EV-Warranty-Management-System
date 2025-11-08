@@ -1,0 +1,126 @@
+/* Local site styles for Admin Dashboard */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap");
+
+:root {
+  --bg: #f6f9fc;
+  --card-bg: #ffffff;
+  --muted: #6c757d;
+}
+
+html,
+body {
+  height: 100%;
+  background: var(--bg);
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial;
+  color: #212529;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  color: #fff !important;
+}
+
+.container {
+  max-width: 1200px;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: 10px;
+}
+.card-quick {
+  min-height: 120px;
+}
+.chart-card {
+  min-height: 320px;
+}
+.card .card-body h6 {
+  font-weight: 600;
+}
+
+.small-muted {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+footer {
+  opacity: 0.7;
+}
+
+/* Table styles */
+.table thead th {
+  background: transparent;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Responsive tweaks */
+@media (max-width: 576px) {
+  .card-quick h2 {
+    font-size: 1.25rem;
+  }
+}
+
+/* subtle shadow */
+.shadow-sm {
+  box-shadow: 0 1px 4px rgba(16, 24, 40, 0.06);
+}
+
+/* button tweaks */
+.btn-outline-light {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Center the empty state */
+.empty-state {
+  padding: 40px;
+  text-align: center;
+  color: var(--muted);
+}
+
+/* KPI styles */
+.kpi {
+  gap: 0.5rem;
+}
+.kpi-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.kpi-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+/* Navbar gradient */
+.navbar {
+  background: linear-gradient(90deg, #0b5ed7 0%, #0d6efd 100%);
+}
+
+/* Cards spacing */
+.card {
+  border: 0;
+}
+.card .card-body {
+  padding: 1rem;
+}
+
+/* Improve table readability */
+.table tbody td {
+  vertical-align: middle;
+}
+
+/* User form */
+.card .form-control {
+  min-height: 42px;
+}
+
+/* Chart canvas responsive */
+canvas {
+  max-width: 100%;
+  height: auto !important;
+}

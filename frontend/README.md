@@ -1,39 +1,75 @@
-# Hệ thống quản lý bảo hành xe điện (EV Warranty Management System)
+# Hệ thống quản lý bảo hành xe điện (EV Warranty Management System)This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Mô tả dự án
 
-Hệ thống quản lý bảo hành xe điện được xây dựng bằng PHP và chạy trên Docker. Hệ thống cung cấp đầy đủ các tính năng:
 
-### ✅ Tính năng đã hoàn thành:
+## Mô tả dự án## Getting Started
 
-1. **Giao diện quản lý yêu cầu bảo hành**
-   - Danh sách yêu cầu bảo hành với tìm kiếm, lọc
-   - Chi tiết yêu cầu với lịch sử trạng thái
-   - Tạo yêu cầu bảo hành mới
-   - Cập nhật trạng thái yêu cầu
 
-2. **Quy trình phê duyệt/từ chối yêu cầu bảo hành**
+
+Hệ thống quản lý bảo hành xe điện được xây dựng bằng PHP và chạy trên Docker. Hệ thống cung cấp đầy đủ các tính năng:First, run the development server:
+
+
+
+### ✅ Tính năng đã hoàn thành:```bash
+
+npm run dev
+
+1. **Giao diện quản lý yêu cầu bảo hành**# or
+
+   - Danh sách yêu cầu bảo hành với tìm kiếm, lọcyarn dev
+
+   - Chi tiết yêu cầu với lịch sử trạng thái# or
+
+   - Tạo yêu cầu bảo hành mớipnpm dev
+
+   - Cập nhật trạng thái yêu cầu# or
+
+bun dev
+
+2. **Quy trình phê duyệt/từ chối yêu cầu bảo hành**```
+
    - Workflow hoàn chỉnh: Chờ xử lý → Đang xem xét → Phê duyệt/Từ chối → Đang xử lý → Hoàn thành
-   - Gán nhân viên xử lý
-   - Theo dõi lịch sử thay đổi trạng thái
-   - Ghi chú và lý do cho mỗi bước
 
-3. **Trang giám sát đăng ký xe**
+   - Gán nhân viên xử lýOpen [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+   - Theo dõi lịch sử thay đổi trạng thái
+
+   - Ghi chú và lý do cho mỗi bướcYou can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+
+
+3. **Trang giám sát đăng ký xe**This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
    - Dashboard theo dõi số lượng xe đăng ký
-   - Thống kê theo hãng xe, theo tháng
+
+   - Thống kê theo hãng xe, theo tháng## Learn More
+
    - Danh sách xe sắp hết bảo hành
-   - Xe đăng ký gần đây
+
+   - Xe đăng ký gần đâyTo learn more about Next.js, take a look at the following resources:
+
    - Biểu đồ trực quan
 
-4. **Công cụ hỗ trợ khách hàng**
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+
+4. **Công cụ hỗ trợ khách hàng**- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
    - Tra cứu thông tin bảo hành bằng VIN/biển số
-   - Form gửi yêu cầu hỗ trợ
+
+   - Form gửi yêu cầu hỗ trợYou can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
    - FAQ (Câu hỏi thường gặp) với tìm kiếm
-   - Thông tin liên hệ hotline, email
+
+   - Thông tin liên hệ hotline, email## Deploy on Vercel
+
    - Trang bảo hành cá nhân cho khách hàng
 
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
 5. **Hệ thống Authentication & Authorization**
-   - Đăng nhập phân quyền: Admin, Staff, Customer
+
+   - Đăng nhập phân quyền: Admin, Staff, CustomerCheck out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
    - Bảo mật session và phân quyền truy cập
    - Giao diện khác nhau theo role
 
@@ -47,233 +83,238 @@ frontend/
 ├── database/
 │   └── init.sql                       # Database schema và dữ liệu mẫu
 ├── public/
-│   └── index.php                      # Entry point, routing
+│   └── index.php                      # Entry point của ứng dụng
 ├── src/
-│   ├── Database.php                   # Kết nối database
+│   ├── Database.php                   # Kết nối database PDO
 │   ├── models/
-│   │   └── WarrantyRequest.php        # Model yêu cầu bảo hành
-│   └── views/                         # Các trang giao diện
-│       ├── login.php                  # Đăng nhập
-│       ├── dashboard.php              # Trang chủ
+│   │   └── WarrantyRequest.php        # Model xử lý warranty requests
+│   └── views/                         # Templates HTML
+│       ├── login.php                  # Trang đăng nhập
+│       ├── dashboard.php              # Dashboard chính
 │       ├── warranty_requests.php      # Quản lý yêu cầu bảo hành
-│       ├── warranty_detail.php        # Chi tiết yêu cầu bảo hành
-│       ├── vehicle_monitoring.php     # Giám sát xe
+│       ├── warranty_detail.php        # Chi tiết yêu cầu
+│       ├── vehicle_monitoring.php     # Giám sát đăng ký xe
 │       ├── customer_support.php       # Hỗ trợ khách hàng
-│       ├── customer_warranties.php    # Bảo hành của khách hàng
-│       └── faq.php                   # FAQ
-└── assets/
-    ├── css/
-    │   └── style.css                  # Custom CSS
-    └── js/
-        └── main.js                    # JavaScript utilities
-```
-
-## Cài đặt và chạy ứng dụng
-
-### Yêu cầu hệ thống
-- Docker Desktop
-- Docker Compose
-- Trình duyệt web hiện đại
-
-### Bước 1: Clone/Download dự án
-```bash
-# Nếu có git
-git clone <repo-url>
-cd frontend
-
-# Hoặc extract file zip vào thư mục frontend
-```
-
-### Bước 2: Chạy Docker
-```bash
-# Khởi động containers
-docker-compose up -d
-
-# Kiểm tra containers đang chạy
-docker-compose ps
-```
-
-### Bước 3: Truy cập ứng dụng
-
-- **Ứng dụng chính**: http://localhost:8080
-- **phpMyAdmin**: http://localhost:8081
-  - Username: root
-  - Password: root123
-
-### Bước 4: Đăng nhập hệ thống
-
-Hệ thống có sẵn 3 tài khoản demo:
-
-1. **Admin**: 
-   - Username: `admin`
-   - Password: `password`
-   - Quyền: Quản lý toàn bộ hệ thống
-
-2. **Staff** (Nhân viên):
-   - Username: `staff1`
-   - Password: `password`  
-   - Quyền: Xử lý yêu cầu bảo hành
-
-3. **Customer** (Khách hàng):
-   - Username: `customer1`
-   - Password: `password`
-   - Quyền: Tạo và theo dõi yêu cầu bảo hành
-
-## Tính năng chính
-
-### 1. Dashboard
-- Thống kê tổng quan về xe và yêu cầu bảo hành
-- Biểu đồ trạng thái yêu cầu
-- Danh sách yêu cầu mới nhất
-- Thao tác nhanh
-
-### 2. Quản lý yêu cầu bảo hành
-- **Danh sách yêu cầu**: Hiển thị tất cả yêu cầu với filters
-- **Chi tiết yêu cầu**: Thông tin đầy đủ, lịch sử trạng thái
-- **Workflow phê duyệt**: 
-  - Pending → In Review → Approved/Rejected → In Progress → Completed
-- **Gán nhân viên**: Assign staff cho từng yêu cầu
-- **Timeline**: Theo dõi lịch sử thay đổi
-
-### 3. Giám sát xe
-- **Thống kê xe**: Tổng số, hoạt động, sắp hết bảo hành
-- **Biểu đồ**: Đăng ký theo tháng, phân bổ theo hãng xe
-- **Cảnh báo**: Xe sắp hết bảo hành trong 60 ngày
-- **Đăng ký xe mới**: Form đăng ký xe cho khách hàng
-
-### 4. Hỗ trợ khách hàng
-- **Tra cứu bảo hành**: Tìm kiếm bằng VIN hoặc biển số
-- **Gửi yêu cầu hỗ trợ**: Form liên hệ với categorization
-- **FAQ**: Câu hỏi thường gặp với tìm kiếm
-- **Thông tin liên hệ**: Hotline, email, địa chỉ
-
-### 5. Trang khách hàng
-- **Xe của tôi**: Danh sách xe đã đăng ký
-- **Trạng thái bảo hành**: Kiểm tra thời hạn bảo hành
-- **Lịch sử yêu cầu**: Theo dõi các yêu cầu đã gửi
-- **Tạo yêu cầu mới**: Form tạo yêu cầu bảo hành
-
-## Cơ sở dữ liệu
-
-### Các bảng chính:
-- `users`: Người dùng (admin, staff, customer)
-- `manufacturers`: Hãng xe
-- `vehicle_models`: Mẫu xe
-- `vehicle_registrations`: Đăng ký xe
-- `warranty_requests`: Yêu cầu bảo hành
-- `warranty_status_history`: Lịch sử trạng thái
-- `issue_categories`: Danh mục sự cố
-- `spare_parts`: Phụ tùng
-- `faqs`: Câu hỏi thường gặp
-- `support_tickets`: Yêu cầu hỗ trợ
-
-### Dữ liệu mẫu có sẵn:
-- 3 hãng xe: VinFast, Tesla, BYD
-- 4 mẫu xe với thông tin pin, quãng đường
-- 6 danh mục sự cố
-- Phụ tùng và linh kiện
-- FAQ mẫu
-
-## API Endpoints (Có thể mở rộng)
-
-Hệ thống đã chuẩn bị sẵn cấu trúc để phát triển API:
-
-```
-GET    /api/warranty-requests     # Lấy danh sách yêu cầu
-POST   /api/warranty-requests     # Tạo yêu cầu mới  
-GET    /api/warranty-requests/:id # Chi tiết yêu cầu
-PUT    /api/warranty-requests/:id # Cập nhật yêu cầu
-GET    /api/vehicles              # Danh sách xe
-GET    /api/customers             # Danh sách khách hàng
+│       ├── faq.php                    # FAQ
+│       └── customer_warranties.php    # Bảo hành cá nhân
+├── assets/
+│   ├── css/
+│   │   └── style.css                  # Custom CSS
+│   └── js/
+│       └── main.js                    # Custom JavaScript
+└── test-frontend.html                 # Frontend test với theme xanh ngọc
 ```
 
 ## Công nghệ sử dụng
 
-### Backend:
-- **PHP 8.2**: Ngôn ngữ chính
-- **Apache**: Web server
-- **MySQL 8.0**: Cơ sở dữ liệu
-- **PDO**: Database abstraction
+- **Backend**: PHP 8.1 với Apache
+- **Database**: MySQL 5.7 
+- **Frontend**: HTML, CSS, JavaScript, Bootstrap 5
+- **Containerization**: Docker & Docker Compose
+- **Additional**: phpMyAdmin cho quản lý database
 
-### Frontend:
-- **Bootstrap 5**: CSS framework
-- **Font Awesome 6**: Icons
-- **Chart.js**: Biểu đồ
-- **Vanilla JavaScript**: Interactions
+## Cách chạy dự án
 
-### DevOps:
-- **Docker**: Containerization
-- **Docker Compose**: Multi-container orchestration
-- **phpMyAdmin**: Database management
+### 1. Yêu cầu hệ thống
+- Docker Desktop
+- Git
 
-## Tính năng nâng cao
-
-### Đã triển khai:
-- Responsive design cho mobile
-- Search và filter realtime
-- Validation form phía client
-- Timeline interface cho lịch sử
-- Status badges với color coding
-- Modal dialogs cho UX tốt hơn
-
-### Có thể mở rộng:
-- PWA (Progressive Web App)
-- Push notifications
-- File upload cho attachments
-- Email notifications
-- Report generation (PDF/Excel)
-- Multi-language support
-- Dark mode
-- Advanced analytics
-
-## Troubleshooting
-
-### Container không khởi động:
+### 2. Clone và chạy
 ```bash
-# Kiểm tra logs
-docker-compose logs
-
-# Restart containers
-docker-compose restart
-
-# Rebuild nếu cần
-docker-compose down
-docker-compose up --build
+git clone https://github.com/NguyenSinh69/OEM-EV-Warranty-Management-System.git
+cd OEM-EV-Warranty-Management-System/frontend
+docker-compose up -d
 ```
 
-### Database connection error:
-- Kiểm tra MySQL container đã chạy: `docker-compose ps`
-- Verify credentials trong `.env` hoặc `docker-compose.yml`
-- Đợi MySQL khởi động hoàn toàn (có thể mất 1-2 phút)
+### 3. Truy cập ứng dụng
 
-### Port conflicts:
-- Thay đổi ports trong `docker-compose.yml` nếu bị conflict
-- Default ports: 8080 (web), 3306 (MySQL), 8081 (phpMyAdmin)
+#### Web Application (Laravel API):
+- **URL**: http://localhost:8090
+- **API Health Check**: http://localhost:8090/api/health
+- **Test Frontend**: http://localhost:8090/test-frontend.html
 
-## Bảo mật
+#### Management Tools:
+- **phpMyAdmin**: http://localhost:8081
+  - Username: `warranty_user`
+  - Password: `warranty_pass`
+- **MailHog** (Email testing): http://localhost:8025
 
-### Implemented:
-- Session-based authentication
-- Role-based access control
-- SQL injection prevention (PDO prepared statements)
-- XSS protection (htmlspecialchars)
-- CSRF protection cơ bản
+#### API Endpoints chính:
+- `GET /api/warranty-claims` - Danh sách yêu cầu bảo hành
+- `POST /api/warranty-claims` - Tạo yêu cầu mới
+- `PATCH /api/warranty-claims/{id}/status` - Cập nhật trạng thái
+- `GET /api/vehicles` - Danh sách xe
+- `GET /api/customers` - Danh sách khách hàng
+- `GET /api/approvals/pending` - Yêu cầu chờ phê duyệt
 
-### Khuyến nghị production:
-- HTTPS/SSL certificates
-- Environment variables cho credentials
-- Rate limiting
-- Input validation server-side
-- Logging và monitoring
-- Regular security updates
+### 4. Tài khoản mặc định
+- **Admin**: username: `admin`, password: `password123`
+- **Customer**: username: `customer`, password: `password123`
 
-## Liên hệ & Hỗ trợ
+## Features & Screenshots
 
-Để được hỗ trợ về dự án này:
-- Email: support@evwarranty.com
-- Hotline: 1900-1234
-- GitHub Issues (nếu có repo)
+### 🎨 Theme màu xanh ngọc đậm (Teal)
+- Sidebar gradient xanh ngọc sang trọng
+- Button và badge với màu chủ đạo #0d9488
+- Card header với background gradient nhẹ nhàng
+- Responsive design hoàn hảo trên mọi thiết bị
+
+### 📊 Dashboard Analytics
+- Thống kê realtime về warranty claims
+- Biểu đồ số liệu trực quan
+- Quick actions cho các tác vụ thường dùng
+- Recent claims với status tracking
+
+### 🔧 Warranty Management
+- CRUD hoàn chỉnh cho warranty claims
+- Approval workflow với status updates
+- Priority levels và categorization
+- Search và filter functionality
+
+### 🚗 Vehicle Monitoring
+- Vehicle registration tracking
+- VIN-based lookup system
+- Warranty period monitoring
+- Customer-vehicle relationships
+
+### 🎯 Customer Support
+- FAQ system với search
+- Support ticket creation
+- Customer warranty lookup
+- Contact information management
+
+## Database Schema
+
+### Bảng chính:
+- `users` - Quản lý người dùng và phân quyền
+- `customers` - Thông tin khách hàng
+- `vehicles` - Đăng ký xe và thông tin kỹ thuật
+- `warranty_requests` - Yêu cầu bảo hành
+- `faqs` - Câu hỏi thường gặp
+
+### Sample Data:
+Database được populate sẵn với:
+- 3 users (admin, staff, customer)
+- 5 customers mẫu
+- 10 vehicles với các hãng khác nhau
+- 15 warranty requests với trạng thái đa dạng
+- 10 FAQ entries
+
+## API Documentation
+
+### Authentication
+```bash
+POST /api/auth/login
+{
+  "username": "admin",
+  "password": "password123"
+}
+```
+
+### Warranty Claims
+```bash
+# Lấy tất cả claims
+GET /api/warranty-claims
+
+# Tạo claim mới
+POST /api/warranty-claims
+{
+  "vehicle_warranty_id": 1,
+  "customer_id": 1,
+  "claim_type": "repair",
+  "priority": "high",
+  "issue_description": "Mô tả vấn đề"
+}
+
+# Cập nhật trạng thái
+PATCH /api/warranty-claims/{id}/status
+{
+  "status": "approved"
+}
+```
+
+### Vehicle Management
+```bash
+# Lấy vehicle theo VIN
+GET /api/vehicles/vin/{vin}
+
+# Tạo vehicle mới
+POST /api/vehicles
+{
+  "vin": "1HGBH41JXMN109186",
+  "customer_id": 1,
+  "make": "Tesla",
+  "model": "Model 3",
+  "year": 2023
+}
+```
+
+## Docker Services
+
+### Container Architecture:
+- **warranty_app**: PHP 8.1 + Nginx application server
+- **warranty_db**: MariaDB 10.6 database
+- **warranty_phpmyadmin**: phpMyAdmin interface
+- **warranty_redis**: Redis caching layer
+- **warranty_mailhog**: Email testing service
+
+### Ports:
+- `8090`: Main application
+- `8081`: phpMyAdmin
+- `3307`: MariaDB
+- `6380`: Redis
+- `8025`: MailHog web UI
+- `1025`: MailHog SMTP
+
+## Development
+
+### Code Structure:
+- **MVC Pattern**: Models, Views, Controllers separation
+- **API-First**: RESTful API với JSON responses
+- **Responsive Design**: Bootstrap 5 với custom CSS
+- **Error Handling**: Try-catch với proper error responses
+- **Security**: PDO prepared statements, input validation
+
+### Best Practices:
+- PSR-4 autoloading
+- Environment variables cho config
+- CORS headers cho cross-origin requests
+- Database connection pooling
+- Clean code với proper commenting
+
+## Deployment
+
+### Production Ready:
+- Docker containers optimized cho production
+- Environment variables cho sensitive data
+- Health check endpoints
+- Error logging và monitoring
+- Database migration scripts
+
+### Scaling:
+- Redis caching layer
+- Stateless application design
+- Load balancer ready
+- API rate limiting capability
+
+## Contributing
+
+1. Fork repository
+2. Tạo feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open Pull Request
+
+## License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+## Contact
+
+- **Developer**: NguyenSinh69
+- **Project Link**: https://github.com/NguyenSinh69/OEM-EV-Warranty-Management-System
+- **Live Demo**: http://localhost:8090/test-frontend.html
 
 ---
 
-**Lưu ý**: Đây là phiên bản demo/development. Để triển khai production cần bổ sung thêm các tính năng bảo mật và tối ưu hóa hiệu suất.
+**Status**: ✅ Production Ready - Full-featured EV Warranty Management System với beautiful teal theme!
