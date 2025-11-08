@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  web:
+    image: tomsik68/xampp:latest
+    container_name: ev_warranty_web
+    ports:
+      - "9080:80"
+    volumes:
+      - ./:/www
+    depends_on:
+      - database
+    environment:
+      - DB_HOST=database
+      - DB_NAME=ev_warranty
+      - DB_USER=root
+      - DB_PASSWORD=root123
+    networks:
+      - ev-warranty-network
+
+  database:
+    image: mysql:5.7
+    container_name: ev_warranty_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: ev_warranty
+      MYSQL_ROOT_PASSWORD: root123
+    ports:
+      - "3308:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - ev-warranty-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: ev_warranty_phpmyadmin
+    restart: always
+    ports:
+      - "8091:80"
+    environment:
+      PMA_HOST: database
+      PMA_USER: root
+      PMA_PASSWORD: root123
+    depends_on:
+      - database
+    networks:
+      - ev-warranty-network
+
+volumes:
+  db_data:
+
+networks:
+  ev-warranty-network:
+    driver: bridge
