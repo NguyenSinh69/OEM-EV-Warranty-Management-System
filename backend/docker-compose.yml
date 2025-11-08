@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: warranty_app
+    restart: unless-stopped
+    volumes:
+      - .:/var/www/html
+      - ./storage/logs:/var/www/html/storage/logs
+    ports:
+      - "8090:80"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=warranty_db
+      - DB_USERNAME=warranty_user
+      - DB_PASSWORD=warranty_pass
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - db
+      - redis
+    networks:
+      - warranty_network
+
+  db:
+    image: mariadb:10.6
+    container_name: warranty_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: warranty_db
+      MYSQL_USER: warranty_user
+      MYSQL_PASSWORD: warranty_pass
+      MYSQL_ROOT_PASSWORD: root_password
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database/migrations:/docker-entrypoint-initdb.d
+    ports:
+      - "3307:3306"
+    networks:
+      - warranty_network
+    command: --default-authentication-plugin=mysql_native_password
+
+  redis:
+    image: redis:7-alpine
+    container_name: warranty_redis
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - warranty_network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: warranty_phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: warranty_user
+      PMA_PASSWORD: warranty_pass
+    depends_on:
+      - db
+    networks:
+      - warranty_network
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: warranty_mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - warranty_network
+
+networks:
+  warranty_network:
+    driver: bridge
+
+volumes:
+  db_data:
+  redis_data:
