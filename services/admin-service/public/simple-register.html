@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Đăng ký tài khoản - OEM EV Warranty</title>
+    <title>Đăng ký - OEM EV Warranty</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -54,25 +54,16 @@
         border-color: #667eea;
         box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
       }
-      .login-link {
-        text-align: center;
-        margin-top: 1rem;
-      }
-      .login-link a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .login-link a:hover {
-        text-decoration: underline;
-      }
     </style>
   </head>
   <body>
     <div class="register-card">
       <div class="register-header">
-        <h2>OEM EV Warranty</h2>
+        <h2>🚗 OEM EV Warranty</h2>
         <p>Tạo tài khoản mới</p>
       </div>
+
+      <div id="registerMessage"></div>
 
       <form id="registerForm">
         <div class="mb-3">
@@ -85,6 +76,7 @@
             required
             minlength="3"
             maxlength="50"
+            placeholder="Nhập tên đăng nhập"
           />
           <div class="form-text">Tối thiểu 3 ký tự</div>
         </div>
@@ -98,6 +90,7 @@
             name="password"
             required
             minlength="6"
+            placeholder="Nhập mật khẩu"
           />
           <div class="form-text">Tối thiểu 6 ký tự</div>
         </div>
@@ -112,6 +105,7 @@
             id="confirmPassword"
             name="confirmPassword"
             required
+            placeholder="Nhập lại mật khẩu"
           />
         </div>
 
@@ -126,10 +120,6 @@
           </select>
         </div>
 
-        <div class="mb-3">
-          <div id="registerMessage"></div>
-        </div>
-
         <button type="submit" class="btn btn-primary btn-register">
           <span id="registerText">Đăng ký</span>
           <span
@@ -139,43 +129,31 @@
         </button>
       </form>
 
-      <div class="login-link">
+      <div class="text-center mt-3">
         <small class="text-muted">
           Đã có tài khoản?
-          <a href="login.html">Đăng nhập ngay</a>
+          <a
+            href="simple-login.html"
+            style="color: #667eea; text-decoration: none"
+            >Đăng nhập ngay</a
+          >
         </small>
       </div>
 
-      <div class="text-center mt-3">
+      <div class="text-center mt-2">
         <small class="text-muted">
-          Tài khoản demo có sẵn: admin / admin123
+          Demo: <strong>admin / admin123</strong>
         </small>
       </div>
     </div>
 
     <script>
-      function api(path, opts = {}) {
-        const headers = opts.headers || {};
-        headers["Content-Type"] = headers["Content-Type"] || "application/json";
-        opts.headers = headers;
-        // Use PHP proxy to avoid CORS issues
-        const proxyUrl = `api-proxy.php?path=${encodeURIComponent(path)}`;
-        return fetch(proxyUrl, opts).then(async (res) => {
-          const text = await res.text();
-          try {
-            return JSON.parse(text);
-          } catch (e) {
-            return text;
-          }
-        });
-      }
-
       function showMessage(message, type = "danger") {
         const msgDiv = document.getElementById("registerMessage");
         msgDiv.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show" role="alert">
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>`;
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>`;
       }
 
       function setLoading(loading) {
@@ -237,25 +215,30 @@
           setLoading(true);
 
           try {
-            const response = await api("/api/users", {
+            const response = await fetch("simple-api.php/api/users", {
               method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
               body: JSON.stringify(data),
             });
 
-            if (response.success || response.message) {
+            const result = await response.json();
+
+            if (result.success) {
               showMessage(
                 "Tạo tài khoản thành công! Đang chuyển đến trang đăng nhập...",
                 "success"
               );
               setTimeout(() => {
-                window.location.href = "login.html";
+                window.location.href = "simple-login.html";
               }, 2000);
             } else {
-              showMessage(response.error || "Không thể tạo tài khoản");
+              showMessage(result.error || "Không thể tạo tài khoản");
             }
           } catch (err) {
+            console.error("Register error:", err);
             showMessage("Lỗi kết nối. Vui lòng thử lại.");
-            console.error(err);
           } finally {
             setLoading(false);
           }
@@ -281,7 +264,6 @@
         });
     </script>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

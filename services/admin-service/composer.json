@@ -3,9 +3,7 @@
   "description": "OEM EV Warranty Admin Service",
   "type": "project",
   "require": {
-    "php": "^8.0",
-    "phpoffice/phpspreadsheet": "^1.28",
-    "tecnickcom/tcpdf": "^6.6"
+    "php": "^8.0"
   },
   "autoload": {
     "psr-4": {

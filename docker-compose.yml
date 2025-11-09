@@ -47,8 +47,8 @@ services:
     volumes:
       - ./api-gateway/kong:/kong/declarative
     ports:
-      - "8000:8000"  # Kong Proxy
-      - "8010:8001"  # Kong Admin API
+      - "8000:8000" # Kong Proxy
+      - "8010:8001" # Kong Admin API
     networks:
       - evm_network
 
@@ -155,12 +155,13 @@ services:
   admin-db:
     image: mysql:8.0
     environment:
-      MYSQL_DATABASE: evm_admin_db
+      MYSQL_DATABASE: oem_ev_warranty
       MYSQL_USER: evm_user
       MYSQL_PASSWORD: evm_password
       MYSQL_ROOT_PASSWORD: root_password
     volumes:
       - admin_db_data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
     ports:
       - "3309:3306"
     networks:
@@ -170,17 +171,13 @@ services:
     build:
       context: ./services/admin-service
       dockerfile: Dockerfile
-    depends_on:
-      - admin-db
     environment:
-      DB_HOST: admin-db
-      DB_DATABASE: evm_admin_db
-      DB_USERNAME: evm_user
-      DB_PASSWORD: evm_password
-    volumes:
-      - ./services/admin-service:/var/www
+      DB_HOST: host.docker.internal
+      DB_DATABASE: oem_ev_warranty
+      DB_USERNAME: root
+      DB_PASSWORD:
     ports:
-      - "8004:8004"
+      - "8004:80"
     networks:
       - evm_network
 
@@ -229,8 +226,8 @@ services:
   mailpit:
     image: axllent/mailpit
     ports:
-      - "8025:8025"  # Web UI
-      - "1025:1025"  # SMTP
+      - "8025:8025" # Web UI
+      - "1025:1025" # SMTP
     networks:
       - evm_network
 

@@ -14,11 +14,11 @@ class Database {
     private $conn;
 
     public function __construct() {
-        $this->host = getenv('DB_HOST') ?: '127.0.0.1';
-        $this->db_name = getenv('DB_NAME') ?: 'oem_ev_warranty';
-        $this->username = getenv('DB_USER') ?: 'root';
-        // default to empty password for common XAMPP setups unless DB_PASS provided
-        $this->password = getenv('DB_PASS') !== false ? getenv('DB_PASS') : '';
+        // Use XAMPP/local development settings or Docker environment variables
+        $this->host = getenv('DB_HOST') ?: 'localhost';
+        $this->db_name = getenv('DB_DATABASE') ?: 'oem_ev_warranty';
+        $this->username = getenv('DB_USERNAME') ?: 'root';
+        $this->password = getenv('DB_PASSWORD') ?: '';
         $this->connect();
     }
 

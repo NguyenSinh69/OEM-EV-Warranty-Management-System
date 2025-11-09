@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Debug Admin Functions</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      .test-btn {
+        margin: 10px;
+        padding: 10px 20px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .result {
+        margin: 10px 0;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 5px;
+      }
+      .error {
+        background: #f8d7da;
+        color: #721c24;
+      }
+      .success {
+        background: #d4edda;
+        color: #155724;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🔧 Debug Admin Functions</h1>
+
+    <div>
+      <button class="test-btn" onclick="testLogin()">1. Test Login</button>
+      <button class="test-btn" onclick="testGetUsers()">
+        2. Test Get Users
+      </button>
+      <button class="test-btn" onclick="testDeleteUser()">
+        3. Test Delete Function
+      </button>
+      <button class="test-btn" onclick="testCreateUser()">
+        4. Test Create User
+      </button>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+      const API_BASE = "http://localhost:8004";
+      let authToken = null;
+
+      function showResult(title, content, isError = false) {
+        const results = document.getElementById("results");
+        const div = document.createElement("div");
+        div.className = `result ${isError ? "error" : "success"}`;
+        div.innerHTML = `<strong>${title}:</strong><br><pre>${JSON.stringify(
+          content,
+          null,
+          2
+        )}</pre>`;
+        results.appendChild(div);
+      }
+
+      async function api(endpoint, options = {}) {
+        const response = await fetch(`${API_BASE}${endpoint}`, {
+          headers: {
+            "Content-Type": "application/json",
+            ...options.headers,
+          },
+          ...options,
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        return response.json();
+      }
+
+      async function testLogin() {
+        try {
+          const result = await api("/api/login", {
+            method: "POST",
+            body: JSON.stringify({
+              username: "admin",
+              password: "admin123",
+            }),
+          });
+          showResult("✅ Login Success", result);
+        } catch (error) {
+          showResult("❌ Login Failed", error.message, true);
+        }
+      }
+
+      async function testGetUsers() {
+        try {
+          const result = await api("/api/users");
+          showResult("✅ Get Users Success", result);
+        } catch (error) {
+          showResult("❌ Get Users Failed", error.message, true);
+        }
+      }
+
+      async function testDeleteUser() {
+        try {
+          // Test with a non-admin user (assuming ID 2 exists)
+          const result = await api("/api/users/2", {
+            method: "DELETE",
+          });
+          showResult("✅ Delete User Success", result);
+        } catch (error) {
+          showResult("❌ Delete User Failed", error.message, true);
+        }
+      }
+
+      async function testCreateUser() {
+        try {
+          const result = await api("/api/users", {
+            method: "POST",
+            body: JSON.stringify({
+              username: "testuser",
+              password: "testpass",
+              role: "Customer",
+              email: "test@example.com",
+            }),
+          });
+          showResult("✅ Create User Success", result);
+        } catch (error) {
+          showResult("❌ Create User Failed", error.message, true);
+        }
+      }
+
+      // Test onclick functions that should work in main admin page
+      function editUser(id) {
+        showResult("✅ editUser() called", `User ID: ${id}`);
+        alert(`Edit User ID: ${id} - Function is working!`);
+      }
+
+      function deleteUser(id, username) {
+        if (confirm(`Delete user "${username}" (ID: ${id})?`)) {
+          showResult(
+            "✅ deleteUser() called",
+            `User ID: ${id}, Username: ${username}`
+          );
+          alert(`Delete confirmed for: ${username}`);
+        }
+      }
+
+      // Auto-run login test
+      window.onload = () => {
+        testLogin();
+      };
+    </script>
+
+    <h3>🎯 Test onclick functions:</h3>
+    <button class="test-btn" onclick="editUser(1)">Test editUser(1)</button>
+    <button class="test-btn" onclick="deleteUser(2, 'testuser')">
+      Test deleteUser(2)
+    </button>
+  </body>
+</html>

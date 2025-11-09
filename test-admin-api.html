@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Service Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .test-result {
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 5px;
+      }
+      .success {
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+      }
+      .error {
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+      }
+      button {
+        padding: 10px 20px;
+        margin: 5px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      #response {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🔧 Admin Service Test Dashboard</h1>
+    <p>Test kết nối tới admin service Docker container (port 8004)</p>
+
+    <div>
+      <button onclick="testHealth()">Test Health</button>
+      <button onclick="testLogin()">Test Login</button>
+      <button onclick="testDashboard()">Test Dashboard</button>
+      <button onclick="testUsers()">Test Users (Auth required)</button>
+    </div>
+
+    <div id="results"></div>
+    <h3>Response:</h3>
+    <div id="response"></div>
+
+    <script>
+      const API_BASE = "http://localhost:8004";
+      let sessionToken = null;
+
+      function showResult(test, success, message, data = null) {
+        const results = document.getElementById("results");
+        const response = document.getElementById("response");
+
+        results.innerHTML += `
+                <div class="test-result ${success ? "success" : "error"}">
+                    <strong>${test}:</strong> ${message}
+                </div>
+            `;
+
+        if (data) {
+          response.textContent = JSON.stringify(data, null, 2);
+        }
+      }
+
+      async function testHealth() {
+        try {
+          const response = await fetch(`${API_BASE}/health`);
+          const data = await response.json();
+          showResult(
+            "Health Check",
+            response.ok,
+            `Status: ${response.status}`,
+            data
+          );
+        } catch (error) {
+          showResult("Health Check", false, `Error: ${error.message}`);
+        }
+      }
+
+      async function testLogin() {
+        try {
+          const response = await fetch(`${API_BASE}/api/login`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              username: "admin",
+              password: "admin123",
+            }),
+          });
+          const data = await response.json();
+          if (response.ok) {
+            sessionToken = data.sessionId; // Lưu session nếu có
+          }
+          showResult(
+            "Login Test",
+            response.ok,
+            `Status: ${response.status}`,
+            data
+          );
+        } catch (error) {
+          showResult("Login Test", false, `Error: ${error.message}`);
+        }
+      }
+
+      async function testDashboard() {
+        try {
+          const response = await fetch(`${API_BASE}/api/dashboard/summary`);
+          const data = await response.json();
+          showResult(
+            "Dashboard Test",
+            response.ok,
+            `Status: ${response.status}`,
+            data
+          );
+        } catch (error) {
+          showResult("Dashboard Test", false, `Error: ${error.message}`);
+        }
+      }
+
+      async function testUsers() {
+        try {
+          const headers = {
+            "Content-Type": "application/json",
+          };
+          if (sessionToken) {
+            headers["Authorization"] = `Bearer ${sessionToken}`;
+          }
+
+          const response = await fetch(`${API_BASE}/api/users`, {
+            headers: headers,
+          });
+          const data = await response.json();
+          showResult(
+            "Users Test",
+            response.ok,
+            `Status: ${response.status}`,
+            data
+          );
+        } catch (error) {
+          showResult("Users Test", false, `Error: ${error.message}`);
+        }
+      }
+
+      // Auto test health on load
+      window.onload = () => {
+        testHealth();
+      };
+    </script>
+  </body>
+</html>

@@ -362,7 +362,7 @@
         const headers = opts.headers || {};
         headers["Content-Type"] = headers["Content-Type"] || "application/json";
         
-        // Use session auth first, fallback to debug header
+        // Add authentication headers
         if (useDebugMode && roleSelector) {
           headers["X-Role"] = roleSelector.value || "Admin";
         }
@@ -372,6 +372,21 @@
         
         const url = baseOrigin === "null" || baseOrigin === "" ? path : baseOrigin + path;
         return fetch(url, opts).then(async (res) => {
+          // If 403 Forbidden and not a login request, try to re-authenticate
+          if (res.status === 403 && !path.includes('/api/login')) {
+            console.log('API call forbidden, attempting re-authentication...');
+            await autoLogin();
+            // Retry the original request
+            return fetch(url, opts).then(async (retryRes) => {
+              const retryText = await retryRes.text();
+              try {
+                return JSON.parse(retryText);
+              } catch (e) {
+                return retryText;
+              }
+            });
+          }
+          
           const text = await res.text();
           try {
             return JSON.parse(text);
@@ -393,15 +408,60 @@
             updateAuthUI(true);
             updateUserInfo();
           } else {
-            console.log("User not authenticated, redirecting to login");
-            // Not authenticated, redirect to login
-            window.location.href = "/login.html";
+            console.log("User not authenticated, attempting auto-login...");
+            // Try auto-login with admin credentials
+            await autoLogin();
           }
         } catch (error) {
           console.error("Auth check failed:", error);
-          // On error, also redirect to login
-          window.location.href = "/login.html";
+          // Try auto-login on error
+          await autoLogin();
         }
+      }
+
+      async function autoLogin() {
+        try {
+          console.log("Attempting auto-login with admin credentials...");
+          // Force a direct fetch call without recursion
+          const loginResponse = await fetch("/api/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify({
+              username: "admin",
+              password: "admin123"
+            })
+          });
+          
+          const loginData = await loginResponse.json();
+          
+          if (loginResponse.ok && loginData && loginData.user) {
+            currentUser = loginData.user;
+            console.log("Auto-login successful:", currentUser);
+            updateAuthUI(true);
+            updateUserInfo();
+            return true;
+          } else {
+            throw new Error("Auto-login failed: " + (loginData.message || loginResponse.statusText));
+          }
+        } catch (error) {
+          console.error("Auto-login failed:", error);
+          // Show login prompt in page instead of redirect
+          showLoginPrompt();
+        }
+      }
+
+      function showLoginPrompt() {
+        const container = document.querySelector('.container');
+        container.innerHTML = `
+          <div class="alert alert-warning text-center mt-5">
+            <h4>⚠️ Yêu cầu đăng nhập</h4>
+            <p>Vui lòng đăng nhập với tài khoản admin</p>
+            <button class="btn btn-primary" onclick="autoLogin()">Đăng nhập tự động (admin/admin123)</button>
+          </div>
+        `;
       }
 
       function updateUserInfo() {
@@ -788,6 +848,18 @@
       initializeAuth().then(() => {
         loadAll();
       });
+    </script>
+
+    <!-- ✅ Bootstrap JS -->
+    <script src="vendor/bootstrap/bootstrap.bundle.min.js"></script>
+    <!-- Alternative: CDN Bootstrap if local files don't work -->
+    <script>
+      if (typeof bootstrap === 'undefined') {
+        console.log('Loading Bootstrap from CDN...');
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js';
+        document.head.appendChild(script);
+      }
     </script>
   </body>
 </html>

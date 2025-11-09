@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Admin Dashboard - OEM EV Warranty</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .sidebar {
+        height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+      .sidebar .nav-link {
+        color: rgba(255, 255, 255, 0.8);
+        border-radius: 8px;
+        margin: 2px 0;
+      }
+      .sidebar .nav-link:hover,
+      .sidebar .nav-link.active {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+      }
+      .main-content {
+        background: #f8f9fa;
+        min-height: 100vh;
+      }
+      .stat-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s;
+      }
+      .stat-card:hover {
+        transform: translateY(-2px);
+      }
+      .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #667eea;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block sidebar p-3">
+          <div class="text-center mb-4">
+            <h4>🚗 OEM EV Warranty</h4>
+            <small id="welcomeMessage">Chào mừng!</small>
+          </div>
+
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a
+                class="nav-link active"
+                href="#dashboard"
+                onclick="showSection('dashboard')"
+              >
+                📊 Dashboard
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#users" onclick="showSection('users')">
+                👥 Quản lý người dùng
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                href="#settings"
+                onclick="showSection('settings')"
+              >
+                ⚙️ Cài đặt hệ thống
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                href="#reports"
+                onclick="showSection('reports')"
+              >
+                📈 Báo cáo & Phân tích
+              </a>
+            </li>
+          </ul>
+
+          <div class="mt-auto pt-3">
+            <a href="simple-login.html" class="nav-link"> 🚪 Đăng xuất </a>
+          </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+          <div
+            class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+          >
+            <h1 class="h2" id="pageTitle">Dashboard</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+              <div class="btn-group me-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary">
+                  📄 Export
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary">
+                  🔄 Refresh
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dashboard Section -->
+          <div id="dashboard-section" class="content-section">
+            <div class="row mb-4">
+              <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                  <div class="stat-number">1</div>
+                  <div class="text-muted">Tổng người dùng</div>
+                </div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                  <div class="stat-number">23</div>
+                  <div class="text-muted">Trung tâm dịch vụ</div>
+                </div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                  <div class="stat-number">14</div>
+                  <div class="text-muted">Yêu cầu bảo hành</div>
+                </div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                  <div class="stat-number">98%</div>
+                  <div class="text-muted">Tỷ lệ hoàn thành</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-8">
+                <div class="card">
+                  <div class="card-header">
+                    <h5>📊 Biểu đồ thống kê</h5>
+                  </div>
+                  <div class="card-body">
+                    <canvas id="chartCanvas" width="400" height="200"></canvas>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card">
+                  <div class="card-header">
+                    <h5>📋 Hoạt động gần đây</h5>
+                  </div>
+                  <div class="card-body">
+                    <div class="list-group list-group-flush">
+                      <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                          <h6 class="mb-1">Người dùng mới đăng ký</h6>
+                          <small>3 phút trước</small>
+                        </div>
+                        <p class="mb-1">user123 đã tạo tài khoản mới</p>
+                      </div>
+                      <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                          <h6 class="mb-1">Yêu cầu bảo hành mới</h6>
+                          <small class="text-muted">15 phút trước</small>
+                        </div>
+                        <p class="mb-1">Yêu cầu #WR-2024-001 đã được tạo</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Users Section -->
+          <div id="users-section" class="content-section" style="display: none">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <h3>👥 Quản lý người dùng</h3>
+                <small class="text-muted">
+                  <span id="dataInfo" class="badge bg-success ms-1"
+                    >Database Ready</span
+                  >
+                </small>
+              </div>
+              <div class="btn-group">
+                <button class="btn btn-success" onclick="showAddUserModal()">
+                  ➕ Thêm người dùng
+                </button>
+                <button class="btn btn-primary" onclick="loadUsers()">
+                  🔄 Tải danh sách
+                </button>
+                <button
+                  class="btn btn-outline-secondary btn-sm"
+                  onclick="downloadBackup()"
+                  title="Tải xuống backup dữ liệu"
+                >
+                  📥 Backup
+                </button>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-body">
+                <div id="usersTable">
+                  <p class="text-center text-muted">
+                    <i class="fas fa-users fa-3x mb-3"></i><br />
+                    Nhấn "Tải danh sách" để xem người dùng hoặc "Thêm người
+                    dùng" để tạo mới
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add User Modal -->
+          <div
+            class="modal fade"
+            id="addUserModal"
+            tabindex="-1"
+            aria-labelledby="addUserModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="addUserModalLabel">
+                    ➕ Thêm người dùng mới
+                  </h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  <form id="addUserForm">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="mb-3">
+                          <label for="newUsername" class="form-label"
+                            >Tên đăng nhập *</label
+                          >
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="newUsername"
+                            required
+                            minlength="3"
+                            maxlength="50"
+                          />
+                          <div class="form-text">
+                            Tối thiểu 3 ký tự, chỉ chứa chữ và số
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="mb-3">
+                          <label for="newEmail" class="form-label">Email</label>
+                          <input
+                            type="email"
+                            class="form-control"
+                            id="newEmail"
+                          />
+                          <div class="form-text">Email liên hệ (tùy chọn)</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="mb-3">
+                          <label for="newPassword" class="form-label"
+                            >Mật khẩu *</label
+                          >
+                          <input
+                            type="password"
+                            class="form-control"
+                            id="newPassword"
+                            required
+                            minlength="6"
+                          />
+                          <div class="form-text">Tối thiểu 6 ký tự</div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="mb-3">
+                          <label for="newRole" class="form-label"
+                            >Vai trò *</label
+                          >
+                          <select class="form-select" id="newRole" required>
+                            <option value="">-- Chọn vai trò --</option>
+                            <option value="Admin">🔑 Quản trị viên</option>
+                            <option value="EVM_Staff">🏢 Nhân viên EVM</option>
+                            <option value="SC_Staff">
+                              🔧 Nhân viên trung tâm dịch vụ
+                            </option>
+                            <option value="SC_Technician">
+                              ⚙️ Kỹ thuật viên
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="newNote" class="form-label">Ghi chú</label>
+                      <textarea
+                        class="form-control"
+                        id="newNote"
+                        rows="2"
+                        placeholder="Thêm ghi chú về người dùng này..."
+                      ></textarea>
+                    </div>
+
+                    <div id="addUserMessage"></div>
+                  </form>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    ❌ Hủy
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-success"
+                    onclick="addUser()"
+                  >
+                    <span id="addUserText">💾 Tạo người dùng</span>
+                    <span
+                      id="addUserSpinner"
+                      class="spinner-border spinner-border-sm d-none ms-2"
+                    ></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- View User Modal -->
+          <div
+            class="modal fade"
+            id="viewUserModal"
+            tabindex="-1"
+            aria-labelledby="viewUserModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="viewUserModalLabel">
+                    👤 Thông tin chi tiết người dùng
+                  </h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  <div id="userDetails">
+                    <p class="text-center">Loading...</p>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    Đóng
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    onclick="editCurrentUser()"
+                  >
+                    ✏️ Chỉnh sửa
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Settings Section -->
+          <div
+            id="settings-section"
+            class="content-section"
+            style="display: none"
+          >
+            <h3>⚙️ Cài đặt hệ thống</h3>
+            <div class="card">
+              <div class="card-body">
+                <h5>Cấu hình chung</h5>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group mb-3">
+                      <label class="form-label">Tên hệ thống</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        value="OEM EV Warranty Management"
+                      />
+                    </div>
+                    <div class="form-group mb-3">
+                      <label class="form-label">Email hỗ trợ</label>
+                      <input
+                        type="email"
+                        class="form-control"
+                        value="support@oemev.com"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group mb-3">
+                      <label class="form-label">Múi giờ</label>
+                      <select class="form-select">
+                        <option selected>UTC+7 (Vietnam)</option>
+                        <option>UTC+0 (GMT)</option>
+                      </select>
+                    </div>
+                    <div class="form-group mb-3">
+                      <label class="form-label">Ngôn ngữ</label>
+                      <select class="form-select">
+                        <option selected>Tiếng Việt</option>
+                        <option>English</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <button class="btn btn-success">💾 Lưu cài đặt</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reports Section -->
+          <div
+            id="reports-section"
+            class="content-section"
+            style="display: none"
+          >
+            <h3>📈 Báo cáo & Phân tích</h3>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="card">
+                  <div class="card-header">
+                    <h5>📊 Báo cáo người dùng</h5>
+                  </div>
+                  <div class="card-body">
+                    <p>Thống kê người dùng theo vai trò:</p>
+                    <ul>
+                      <li>Admin: 5 người</li>
+                      <li>EVM Staff: 45 người</li>
+                      <li>SC Staff: 120 người</li>
+                      <li>Technician: 677 người</li>
+                    </ul>
+                    <button class="btn btn-primary btn-sm">
+                      📄 Xuất báo cáo
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="card">
+                  <div class="card-header">
+                    <h5>🔧 Báo cáo bảo hành</h5>
+                  </div>
+                  <div class="card-body">
+                    <p>Thống kê yêu cầu bảo hành:</p>
+                    <ul>
+                      <li>Đang xử lý: 45 yêu cầu</li>
+                      <li>Hoàn thành: 1,189 yêu cầu</li>
+                      <li>Đã hủy: 12 yêu cầu</li>
+                    </ul>
+                    <button class="btn btn-success btn-sm">
+                      📊 Xem chi tiết
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      function showSection(sectionName) {
+        // Hide all sections
+        const sections = document.querySelectorAll(".content-section");
+        sections.forEach((section) => (section.style.display = "none"));
+
+        // Show selected section
+        document.getElementById(sectionName + "-section").style.display =
+          "block";
+
+        // Update page title
+        const titles = {
+          dashboard: "Dashboard",
+          users: "Quản lý người dùng",
+          settings: "Cài đặt hệ thống",
+          reports: "Báo cáo & Phân tích",
+        };
+        document.getElementById("pageTitle").textContent = titles[sectionName];
+
+        // Update active nav link
+        const navLinks = document.querySelectorAll(".nav-link");
+        navLinks.forEach((link) => link.classList.remove("active"));
+        event.target.classList.add("active");
+      }
+
+      async function loadUsers() {
+        const usersTable = document.getElementById("usersTable");
+        usersTable.innerHTML = '<p class="text-center">🔄 Đang tải...</p>';
+
+        try {
+          const response = await fetch("simple-api.php/api/users");
+          const result = await response.json();
+
+          if (result.success) {
+            let tableHtml = `
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tên đăng nhập</th>
+                                    <th>Vai trò</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+
+            result.data.forEach((user) => {
+              tableHtml += `
+                            <tr>
+                                <td>${user.id}</td>
+                                <td>${user.username}</td>
+                                <td><span class="badge bg-primary">${user.role}</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-info me-1" onclick="viewUser(${user.id}, '${user.username}', '${user.role}')">👁️ Xem</button>
+                                    <button class="btn btn-sm btn-outline-primary me-1" onclick="editUser(${user.id})">✏️ Sửa</button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteUser(${user.id}, '${user.username}')">🗑️ Xóa</button>
+                                </td>
+                            </tr>
+                        `;
+            });
+
+            tableHtml += "</tbody></table>";
+
+            // Add data source info
+            if (result.source) {
+              tableHtml += `<div class="mt-3 text-end">
+                <small class="text-muted">
+                  📊 Tổng: ${result.total} người dùng | 
+                  💾 Nguồn: ${
+                    result.source === "file_storage"
+                      ? "File JSON (Lưu vĩnh viễn)"
+                      : "Session (Tạm thời)"
+                  }
+                </small>
+              </div>`;
+            }
+
+            usersTable.innerHTML = tableHtml;
+
+            // Update data info badge
+            const dataInfoBadge = document.getElementById("dataInfo");
+            if (dataInfoBadge) {
+              if (result.source === "file_storage") {
+                dataInfoBadge.className = "badge bg-success ms-1";
+                dataInfoBadge.textContent = `${result.total} users stored`;
+              } else {
+                dataInfoBadge.className = "badge bg-warning ms-1";
+                dataInfoBadge.textContent = "Temporary storage";
+              }
+            }
+          } else {
+            usersTable.innerHTML =
+              '<p class="text-danger">❌ Không thể tải danh sách người dùng</p>';
+          }
+        } catch (err) {
+          console.error("Load users error:", err);
+          usersTable.innerHTML = '<p class="text-danger">❌ Lỗi kết nối</p>';
+        }
+      }
+
+      // Check session and update welcome message
+      async function checkSession() {
+        try {
+          const response = await fetch("simple-api.php/api/test");
+          const result = await response.json();
+
+          if (result.session) {
+            document.getElementById(
+              "welcomeMessage"
+            ).textContent = `Chào ${result.session.username}!`;
+          }
+        } catch (err) {
+          console.error("Session check failed:", err);
+        }
+      }
+
+      // Show Add User Modal
+      function showAddUserModal() {
+        // Reset form
+        document.getElementById("addUserForm").reset();
+        document.getElementById("addUserMessage").innerHTML = "";
+
+        // Show modal
+        const modal = new bootstrap.Modal(
+          document.getElementById("addUserModal")
+        );
+        modal.show();
+
+        // Focus on username field
+        setTimeout(() => {
+          document.getElementById("newUsername").focus();
+        }, 500);
+      }
+
+      // Add User Function
+      async function addUser() {
+        const username = document.getElementById("newUsername").value.trim();
+        const email = document.getElementById("newEmail").value.trim();
+        const password = document.getElementById("newPassword").value.trim();
+        const role = document.getElementById("newRole").value;
+        const note = document.getElementById("newNote").value.trim();
+
+        // Validation
+        if (!username || username.length < 3) {
+          showAddUserMessage("Tên đăng nhập phải có ít nhất 3 ký tự", "danger");
+          return;
+        }
+
+        if (!password || password.length < 6) {
+          showAddUserMessage("Mật khẩu phải có ít nhất 6 ký tự", "danger");
+          return;
+        }
+
+        if (!role) {
+          showAddUserMessage("Vui lòng chọn vai trò", "danger");
+          return;
+        }
+
+        // Set loading state
+        setAddUserLoading(true);
+
+        try {
+          const userData = {
+            username: username,
+            password: password,
+            role: role,
+            email: email || null,
+            note: note || null,
+          };
+
+          const response = await fetch("simple-api.php/api/users", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(userData),
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            showAddUserMessage("✅ Tạo người dùng thành công!", "success");
+
+            // Show success notification on main page
+            showMainNotification(
+              `✅ Đã thêm người dùng "${username}" thành công!`,
+              "success"
+            );
+
+            // Reload users immediately
+            setTimeout(() => {
+              loadUsers();
+            }, 500);
+
+            // Close modal after 2 seconds
+            setTimeout(() => {
+              const modal = bootstrap.Modal.getInstance(
+                document.getElementById("addUserModal")
+              );
+              if (modal) {
+                modal.hide();
+              }
+            }, 2000);
+          } else {
+            showAddUserMessage(
+              result.error || "Không thể tạo người dùng",
+              "danger"
+            );
+          }
+        } catch (err) {
+          console.error("Add user error:", err);
+          showAddUserMessage("❌ Lỗi kết nối. Vui lòng thử lại.", "danger");
+        } finally {
+          setAddUserLoading(false);
+        }
+      }
+
+      // View User Function
+      function viewUser(id, username, role) {
+        const userDetailsDiv = document.getElementById("userDetails");
+
+        // Generate user details HTML
+        userDetailsDiv.innerHTML = `
+          <div class="row">
+            <div class="col-md-6">
+              <div class="card border-0 bg-light">
+                <div class="card-body">
+                  <h6 class="card-title text-primary">🆔 Thông tin cơ bản</h6>
+                  <p><strong>ID:</strong> ${id}</p>
+                  <p><strong>Tên đăng nhập:</strong> ${username}</p>
+                  <p><strong>Vai trò:</strong> <span class="badge bg-primary">${role}</span></p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card border-0 bg-light">
+                <div class="card-body">
+                  <h6 class="card-title text-success">📊 Thống kê hoạt động</h6>
+                  <p><strong>Ngày tạo:</strong> ${new Date().toLocaleDateString(
+                    "vi-VN"
+                  )}</p>
+                  <p><strong>Lần đăng nhập cuối:</strong> Hôm nay</p>
+                  <p><strong>Trạng thái:</strong> <span class="badge bg-success">Hoạt động</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row mt-3">
+            <div class="col-12">
+              <div class="card border-0 bg-light">
+                <div class="card-body">
+                  <h6 class="card-title text-info">🔒 Quyền hạn</h6>
+                  <div class="row">
+                    ${getRolePermissions(role)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+
+        // Show modal
+        const modal = new bootstrap.Modal(
+          document.getElementById("viewUserModal")
+        );
+        modal.show();
+      }
+
+      // Get role permissions HTML
+      function getRolePermissions(role) {
+        const permissions = {
+          Admin: [
+            "👑 Quản trị toàn hệ thống",
+            "👥 Quản lý người dùng",
+            "⚙️ Cài đặt hệ thống",
+            "📊 Xem báo cáo",
+          ],
+          EVM_Staff: [
+            "📋 Quản lý yêu cầu bảo hành",
+            "📊 Xem báo cáo",
+            "📞 Hỗ trợ khách hàng",
+          ],
+          SC_Staff: [
+            "🔧 Xử lý yêu cầu bảo hành",
+            "📝 Cập nhật trạng thái",
+            "👥 Quản lý kỹ thuật viên",
+          ],
+          SC_Technician: [
+            "⚙️ Thực hiện sửa chữa",
+            "📝 Cập nhật tiến độ",
+            "📷 Tải lên hình ảnh",
+          ],
+        };
+
+        const userPermissions = permissions[role] || [
+          "Không có quyền đặc biệt",
+        ];
+
+        return userPermissions
+          .map(
+            (permission) =>
+              `<div class="col-md-6 mb-2">
+            <span class="badge bg-outline-secondary">${permission}</span>
+          </div>`
+          )
+          .join("");
+      }
+
+      // Edit User Function
+      function editUser(id) {
+        alert(
+          `Chức năng chỉnh sửa người dùng ID: ${id} sẽ được phát triển trong phiên bản tiếp theo.`
+        );
+      }
+
+      // Delete User Function
+      function deleteUser(id, username) {
+        if (
+          confirm(
+            `⚠️ Bạn có chắc chắn muốn xóa người dùng "${username}"?\n\nHành động này không thể hoàn tác!`
+          )
+        ) {
+          alert(
+            `Chức năng xóa người dùng ID: ${id} sẽ được phát triển trong phiên bản tiếp theo.`
+          );
+        }
+      }
+
+      // Helper functions for Add User Modal
+      function showAddUserMessage(message, type = "danger") {
+        const msgDiv = document.getElementById("addUserMessage");
+        msgDiv.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show" role="alert">
+          ${message}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>`;
+      }
+
+      function setAddUserLoading(loading) {
+        const button = document.querySelector("#addUserModal .btn-success");
+        const text = document.getElementById("addUserText");
+        const spinner = document.getElementById("addUserSpinner");
+
+        if (loading) {
+          button.disabled = true;
+          text.textContent = "⏳ Đang tạo...";
+          spinner.classList.remove("d-none");
+        } else {
+          button.disabled = false;
+          text.textContent = "💾 Tạo người dùng";
+          spinner.classList.add("d-none");
+        }
+      }
+
+      // Download backup function
+      async function downloadBackup() {
+        try {
+          showMainNotification("🔄 Đang tạo file backup...", "info");
+
+          const response = await fetch("simple-api.php/api/backup");
+
+          if (response.ok) {
+            // Create download link
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.style.display = "none";
+            a.href = url;
+            a.download = `users_backup_${new Date()
+              .toISOString()
+              .slice(0, 19)
+              .replace(/:/g, "-")}.json`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+
+            showMainNotification(
+              "✅ Đã tải xuống file backup thành công!",
+              "success"
+            );
+          } else {
+            throw new Error("Không thể tạo backup");
+          }
+        } catch (err) {
+          console.error("Backup error:", err);
+          showMainNotification(
+            "❌ Lỗi khi tạo backup: " + err.message,
+            "danger"
+          );
+        }
+      }
+
+      // Show main page notification
+      function showMainNotification(message, type = "info") {
+        // Create notification element if it doesn't exist
+        let notificationArea = document.getElementById("mainNotificationArea");
+        if (!notificationArea) {
+          notificationArea = document.createElement("div");
+          notificationArea.id = "mainNotificationArea";
+          notificationArea.style.position = "fixed";
+          notificationArea.style.top = "20px";
+          notificationArea.style.right = "20px";
+          notificationArea.style.zIndex = "9999";
+          notificationArea.style.maxWidth = "400px";
+          document.body.appendChild(notificationArea);
+        }
+
+        // Create notification
+        const notification = document.createElement("div");
+        notification.className = `alert alert-${type} alert-dismissible fade show shadow`;
+        notification.style.marginBottom = "10px";
+        notification.innerHTML = `
+          ${message}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+
+        // Add to notification area
+        notificationArea.appendChild(notification);
+
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.remove();
+          }
+        }, 5000);
+      }
+
+      // Simple chart drawing
+      function drawChart() {
+        const canvas = document.getElementById("chartCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // Simple bar chart
+        ctx.fillStyle = "#667eea";
+        ctx.fillRect(50, 150, 30, 50);
+        ctx.fillRect(100, 120, 30, 80);
+        ctx.fillRect(150, 100, 30, 100);
+        ctx.fillRect(200, 130, 30, 70);
+        ctx.fillRect(250, 90, 30, 110);
+
+        ctx.fillStyle = "#000";
+        ctx.font = "12px Arial";
+        ctx.fillText("Jan", 55, 170);
+        ctx.fillText("Feb", 105, 170);
+        ctx.fillText("Mar", 155, 170);
+        ctx.fillText("Apr", 205, 170);
+        ctx.fillText("May", 255, 170);
+      }
+
+      // Initialize page
+      window.addEventListener("load", () => {
+        checkSession();
+        drawChart();
+      });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
