@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS attachments (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  claim_id CHAR(36) NOT NULL,
+  filename VARCHAR(255) NOT NULL,
+  path VARCHAR(512) NOT NULL,
+  mimetype VARCHAR(200) NULL,
+  size BIGINT DEFAULT 0,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_attachments_claim_id (claim_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
