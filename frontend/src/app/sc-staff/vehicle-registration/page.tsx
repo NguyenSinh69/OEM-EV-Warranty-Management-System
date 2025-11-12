@@ -42,16 +42,28 @@ export default function VehicleRegistrationPage() {
   const [form, setForm] = useState<VehicleRegistrationForm>({
     vin: '',
     model_id: '',
-    year: new Date().getFullYear().toString(),
+    year: '',
     color: '',
     customer_id: '',
-    purchase_date: new Date().toISOString().split('T')[0],
-    warranty_start_date: new Date().toISOString().split('T')[0],
+    purchase_date: '',
+    warranty_start_date: '',
     license_plate: ''
   });
 
   const [models, setModels] = useState<Model[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
+
+  // Set default dates after mount to avoid hydration mismatch
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0];
+    const currentYear = new Date().getFullYear().toString();
+    setForm(prev => ({
+      ...prev,
+      year: currentYear,
+      purchase_date: today,
+      warranty_start_date: today
+    }));
+  }, []);
 
   // Load reference data
   useEffect(() => {
@@ -116,14 +128,16 @@ export default function VehicleRegistrationPage() {
       if (data.success) {
         setSuccessMessage(`Đăng ký xe thành công! Số VIN: ${form.vin}`);
         // Reset form
+        const today = new Date().toISOString().split('T')[0];
+        const currentYear = new Date().getFullYear().toString();
         setForm({
           vin: '',
           model_id: '',
-          year: new Date().getFullYear().toString(),
+          year: currentYear,
           color: '',
           customer_id: '',
-          purchase_date: new Date().toISOString().split('T')[0],
-          warranty_start_date: new Date().toISOString().split('T')[0],
+          purchase_date: today,
+          warranty_start_date: today,
           license_plate: ''
         });
       } else {

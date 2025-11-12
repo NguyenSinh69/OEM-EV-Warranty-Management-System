@@ -68,13 +68,19 @@ export default function TechnicianAssignmentPage() {
     claim_number: '',
     work_type: '',
     priority: 'medium',
-    due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 7 days from now
+    due_date: '',
     estimated_hours: 4,
     description: '',
     special_instructions: ''
   });
 
   useEffect(() => {
+    // Set default due date (7 days from now) after mount
+    const dueDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    setNewAssignment(prev => ({
+      ...prev,
+      due_date: dueDate
+    }));
     loadTechnicians();
     loadAssignments();
   }, []);
@@ -650,7 +656,6 @@ export default function TechnicianAssignmentPage() {
                       type="date"
                       value={newAssignment.due_date}
                       onChange={(e) => setNewAssignment({ ...newAssignment, due_date: e.target.value })}
-                      min={new Date().toISOString().split('T')[0]}
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       required
                     />

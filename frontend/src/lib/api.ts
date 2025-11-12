@@ -136,6 +136,114 @@ export const api = {
     return response.data;
   },
 
+  // SC Staff APIs
+  scStaff: {
+    // Dashboard
+    getDashboardStats: async (): Promise<ApiResponse<any>> => {
+      const response = await apiClient.get(`${API_BASE_URL}:8003/api/sc-staff/dashboard/stats`);
+      return response.data;
+    },
+
+    // Vehicle Registration
+    registerVehicle: async (vehicleData: any): Promise<ApiResponse<any>> => {
+      const response = await apiClient.post(`${API_BASE_URL}:8003/api/sc-staff/vehicles/register`, vehicleData);
+      return response.data;
+    },
+
+    searchVehicles: async (query: string, searchType: string = 'all'): Promise<ApiResponse<any[]>> => {
+      const response = await apiClient.get(`${API_BASE_URL}:8003/api/sc-staff/vehicles/search`, {
+        params: { query, search_type: searchType }
+      });
+      return response.data;
+    },
+
+    getReferenceData: async (): Promise<ApiResponse<any>> => {
+      const response = await apiClient.get(`${API_BASE_URL}:8003/api/sc-staff/reference-data`);
+      return response.data;
+    },
+
+    // Warranty Claims
+    createClaim: async (claimData: any): Promise<ApiResponse<any>> => {
+      const response = await apiClient.post(`${API_BASE_URL}:8003/api/sc-staff/warranty-claims/create`, claimData);
+      return response.data;
+    },
+
+    getWarrantyClaims: async (status?: string): Promise<ApiResponse<any[]>> => {
+      const response = await apiClient.get(`${API_BASE_URL}:8003/api/sc-staff/warranty-claims`, {
+        params: status ? { status } : {}
+      });
+      return response.data;
+    },
+
+    // Recall Campaigns
+    getRecallCampaigns: async (): Promise<ApiResponse<any[]>> => {
+      const response = await apiClient.get(`${API_BASE_URL}:8003/api/sc-staff/recalls`);
+      return response.data;
+    },
+
+    // File Upload
+    uploadFile: async (file: File, category: string = 'claims'): Promise<ApiResponse<any>> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('category', category);
+
+      const response = await apiClient.post(`${API_BASE_URL}:8006/api/upload/file`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      return response.data;
+    },
+  },
+
+  // Customer Portal APIs
+  customer: {
+    getMyVehicles: async (): Promise<ApiResponse<Vehicle[]>> => {
+      const response = await apiClient.get(`${API_BASE_URL}:8001/api/customer/vehicles`);
+      return response.data;
+    },
+
+    getMyClaims: async (status?: string): Promise<ApiResponse<WarrantyClaim[]>> => {
+      const response = await apiClient.get(`${API_BASE_URL}:8001/api/customer/claims`, {
+        params: status ? { status } : {}
+      });
+      return response.data;
+    },
+
+    createClaim: async (claimData: any): Promise<ApiResponse<WarrantyClaim>> => {
+      const response = await apiClient.post(`${API_BASE_URL}:8001/api/customer/claims`, claimData);
+      return response.data;
+    },
+
+    getClaimDetails: async (claimId: number): Promise<ApiResponse<WarrantyClaim>> => {
+      const response = await apiClient.get(`${API_BASE_URL}:8001/api/customer/claims/${claimId}`);
+      return response.data;
+    },
+
+    bookAppointment: async (appointmentData: any): Promise<ApiResponse<any>> => {
+      const response = await apiClient.post(`${API_BASE_URL}:8001/api/customer/appointments`, appointmentData);
+      return response.data;
+    },
+
+    getMyAppointments: async (): Promise<ApiResponse<any[]>> => {
+      const response = await apiClient.get(`${API_BASE_URL}:8001/api/customer/appointments`);
+      return response.data;
+    },
+
+    getMyNotifications: async (): Promise<ApiResponse<any[]>> => {
+      const response = await apiClient.get(`${API_BASE_URL}:8001/api/customer/notifications`);
+      return response.data;
+    },
+
+    markNotificationAsRead: async (notificationId: number): Promise<ApiResponse<any>> => {
+      const response = await apiClient.put(`${API_BASE_URL}:8001/api/customer/notifications/${notificationId}/read`);
+      return response.data;
+    },
+
+    deleteNotification: async (notificationId: number): Promise<ApiResponse<any>> => {
+      const response = await apiClient.delete(`${API_BASE_URL}:8001/api/customer/notifications/${notificationId}`);
+      return response.data;
+    },
+  },
+
   // Health checks for all services
   async checkServicesHealth(): Promise<Record<string, any>> {
     const services = [
@@ -144,11 +252,13 @@ export const api = {
       { name: 'vehicle', port: 8003 },
       { name: 'admin', port: 8004 },
       { name: 'notification', port: 8005 },
+      { name: 'upload', port: 8006 },
     ];
 
     const healthChecks = await Promise.allSettled(
       services.map(async (service) => {
-        const response = await apiClient.get(`${API_BASE_URL}:${service.port}/api/health`);
+        const healthPath = service.name === 'upload' ? '/api/upload/health' : '/api/health';
+        const response = await apiClient.get(`${API_BASE_URL}:${service.port}${healthPath}`);
         return { [service.name]: response.data };
       })
     );

@@ -12,7 +12,9 @@ import {
   Bars3Icon,
   XMarkIcon,
   UserCircleIcon,
-  ArrowRightOnRectangleIcon
+  ArrowRightOnRectangleIcon,
+  HomeIcon,
+  ListBulletIcon
 } from '@heroicons/react/24/outline';
 
 interface SidebarItemProps {
@@ -49,9 +51,19 @@ export default function SCStaffLayout({
 
   const sidebarItems = [
     {
+      icon: HomeIcon,
+      label: 'Dashboard',
+      href: '/sc-staff',
+    },
+    {
       icon: TruckIcon,
       label: 'Đăng Ký Xe',
       href: '/sc-staff/vehicle-registration',
+    },
+    {
+      icon: ListBulletIcon,
+      label: 'Danh Sách Xe',
+      href: '/sc-staff/vehicles',
     },
     {
       icon: DocumentTextIcon,

@@ -54,12 +54,17 @@ export default function ClaimManagementPage() {
     vehicle_vin: '',
     issue_description: '',
     symptoms: '',
-    failure_date: new Date().toISOString().split('T')[0],
+    failure_date: '',
     failure_mileage: '',
     priority: 'medium'
   });
 
   useEffect(() => {
+    // Set default date after mount
+    setNewClaim(prev => ({
+      ...prev,
+      failure_date: new Date().toISOString().split('T')[0]
+    }));
     loadClaims();
     loadVehicles();
   }, [statusFilter]);
