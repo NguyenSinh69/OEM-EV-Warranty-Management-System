@@ -106,7 +106,11 @@
                 <button type="button" class="btn btn-sm btn-outline-secondary">
                   📄 Export
                 </button>
-                <button type="button" class="btn btn-sm btn-outline-secondary">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-secondary"
+                  onclick="updateDashboardStats()"
+                >
                   🔄 Refresh
                 </button>
               </div>
@@ -589,6 +593,9 @@
                 dataInfoBadge.textContent = "Temporary storage";
               }
             }
+
+            // Update dashboard stats after loading users
+            updateDashboardStats();
           } else {
             usersTable.innerHTML =
               '<p class="text-danger">❌ Không thể tải danh sách người dùng</p>';
@@ -949,10 +956,88 @@
         ctx.fillText("May", 255, 170);
       }
 
+      // Update Dashboard Statistics
+      async function updateDashboardStats() {
+        try {
+          const response = await fetch("simple-api.php/api/users");
+          const result = await response.json();
+
+          if (result.success) {
+            const users = result.data;
+            const totalUsers = users.length;
+
+            // Count users by role
+            const roleCounts = {
+              Admin: 0,
+              EVM_Staff: 0,
+              SC_Staff: 0,
+              SC_Technician: 0,
+            };
+
+            users.forEach((user) => {
+              if (roleCounts.hasOwnProperty(user.role)) {
+                roleCounts[user.role]++;
+              }
+            });
+
+            // Update dashboard numbers
+            const dashboardStats = document.querySelectorAll(".stat-number");
+            if (dashboardStats.length >= 4) {
+              dashboardStats[0].textContent = totalUsers; // Total users
+              dashboardStats[1].textContent =
+                roleCounts.SC_Staff + roleCounts.SC_Technician; // Service centers
+              dashboardStats[2].textContent = Math.floor(totalUsers * 2.8); // Warranty requests (simulated)
+              dashboardStats[3].textContent = "98%"; // Success rate
+            }
+
+            // Update reports section
+            updateReportsSection(roleCounts, totalUsers);
+          }
+        } catch (error) {
+          console.error("Error updating dashboard stats:", error);
+        }
+      }
+
+      // Update Reports Section
+      function updateReportsSection(roleCounts, totalUsers) {
+        // Update user stats - find the first card with "Báo cáo người dùng"
+        const reportsSection = document.getElementById("reports-section");
+        if (reportsSection) {
+          const userStatsCard = reportsSection.querySelector(
+            ".card .card-body ul"
+          );
+          if (userStatsCard) {
+            userStatsCard.innerHTML = `
+              <li>Admin: ${roleCounts.Admin} người</li>
+              <li>EVM Staff: ${roleCounts.EVM_Staff} người</li>
+              <li>SC Staff: ${roleCounts.SC_Staff} người</li>
+              <li>Technician: ${roleCounts.SC_Technician} người</li>
+            `;
+          }
+
+          // Update warranty stats (simulated based on user count)
+          const warrantyCards = reportsSection.querySelectorAll(
+            ".card .card-body ul"
+          );
+          if (warrantyCards.length > 1) {
+            const pendingWarranties = Math.floor(totalUsers * 9);
+            const completedWarranties = Math.floor(totalUsers * 237.8);
+            const cancelledWarranties = Math.floor(totalUsers * 2.4);
+
+            warrantyCards[1].innerHTML = `
+              <li>Đang xử lý: ${pendingWarranties} yêu cầu</li>
+              <li>Hoàn thành: ${completedWarranties} yêu cầu</li>
+              <li>Đã hủy: ${cancelledWarranties} yêu cầu</li>
+            `;
+          }
+        }
+      }
+
       // Initialize page
       window.addEventListener("load", () => {
         checkSession();
         drawChart();
+        updateDashboardStats();
       });
     </script>
 
