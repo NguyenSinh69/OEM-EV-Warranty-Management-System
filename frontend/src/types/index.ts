@@ -12,12 +12,14 @@ export interface Vehicle {
   id: number;
   vin: string;
   model: string;
+  make?: string; // Brand/manufacturer
   year: number;
   color: string;
   customer_id: number;
   purchase_date: string;
   warranty_start_date: string;
   warranty_end_date: string;
+  warranty_months?: number;
   status: 'active' | 'inactive' | 'recalled';
   mileage: number;
   battery_capacity: string;
@@ -42,10 +44,17 @@ export interface WarrantyClaim {
   claim_number: string;
   customer_id: number;
   vehicle_vin: string;
+  vin?: string; // Alias for vehicle_vin
   description: string;
+  failure_description?: string; // Alias for description
+  component?: string; // Failed component
+  failure_date?: string; // Date of failure
+  mileage?: number; // Mileage at failure
   issue_type: 'battery' | 'motor' | 'electrical' | 'mechanical' | 'software';
   priority: 'low' | 'medium' | 'high' | 'critical';
   status: 'pending' | 'in_progress' | 'approved' | 'rejected' | 'completed' | 'closed';
+  status_notes?: string; // Notes about status changes
+  rejection_reason?: string; // Reason for rejection
   created_at: string;
   updated_at?: string;
   estimated_cost: number;
@@ -53,6 +62,7 @@ export interface WarrantyClaim {
   technician_id?: number;
   service_center_id?: number;
   attachments?: ClaimAttachment[];
+  images?: string[]; // Array of image URLs
   customer?: Customer;
   vehicle?: Vehicle;
   technician?: User;

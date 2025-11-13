@@ -1,0 +1,1 @@
+{"version":1,"defects":{"ClaimTest::testCreateFindUpdateDelete":3},"times":{"ClaimTest::testCreateFindUpdateDelete":0.099,"ClaimTest::testCreateInvalidVin":0.002,"ClaimTest::testCreateInvalidCustomerId":0,"ClaimTest::testCreateInvalidStatus":0,"ClaimTest::testUpdateInvalidVin":0,"ClaimTest::testUpdateInvalidCustomerId":0,"ClaimTest::testUpdateInvalidStatus":0}}

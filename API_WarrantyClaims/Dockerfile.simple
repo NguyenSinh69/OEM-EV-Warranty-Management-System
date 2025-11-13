@@ -1,0 +1,12 @@
+# Sử dụng image PHP đã có sẵn PDO (để tránh build lâu)
+FROM thecodingmachine/php:8.0-v4-cli
+
+# Copy source code
+WORKDIR /app
+COPY . /app
+
+# Expose port
+EXPOSE 8000
+
+# Chạy PHP built-in server
+CMD ["php", "-S", "0.0.0.0:8000", "-t", "public", "public/router.php"]

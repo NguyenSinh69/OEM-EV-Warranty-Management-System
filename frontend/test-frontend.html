@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Warranty Management System - Test Frontend</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0d9488 0%, #134e4a 100%);
+        }
+        .nav-link {
+            color: rgba(255,255,255,0.8) !important;
+            transition: all 0.3s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: white !important;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+        }
+        .card {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: none;
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+            color: white;
+        }
+        .badge-status {
+            font-size: 0.8em;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+            border: none;
+            transition: all 0.3s;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0f766e 0%, #134e4a 100%);
+            transform: translateY(-1px);
+        }
+        .btn-outline-primary {
+            border-color: #0d9488;
+            color: #0d9488;
+        }
+        .btn-outline-primary:hover {
+            background-color: #0d9488;
+            border-color: #0d9488;
+        }
+        .badge-notification {
+            background-color: #f59e0b !important;
+        }
+        .card-header {
+            background: linear-gradient(135deg, #99f6e4 0%, #ccfbf1 100%);
+            border-bottom: 2px solid #0d9488;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar p-3">
+                <div class="text-center mb-4">
+                    <i class="fas fa-car-battery text-white fa-3x mb-2"></i>
+                    <h5 class="text-white">EV Warranty</h5>
+                    <small class="text-white-50">Management System</small>
+                </div>
+                
+                <nav class="nav nav-pills flex-column">
+                    <a class="nav-link active" href="#" onclick="showDashboard()">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                    <a class="nav-link" href="#" onclick="showWarrantyClaims()">
+                        <i class="fas fa-clipboard-list me-2"></i>Warranty Claims
+                    </a>
+                    <a class="nav-link" href="#" onclick="showVehicles()">
+                        <i class="fas fa-car me-2"></i>Vehicles
+                    </a>
+                    <a class="nav-link" href="#" onclick="showCustomers()">
+                        <i class="fas fa-users me-2"></i>Customers
+                    </a>
+                    <a class="nav-link" href="#" onclick="showApprovals()">
+                        <i class="fas fa-check-circle me-2"></i>Approvals
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 p-4">
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 id="page-title">Dashboard</h2>
+                    <div>
+                        <button class="btn btn-outline-primary me-2">
+                            <i class="fas fa-bell"></i>
+                            <span class="badge bg-danger badge-notification">3</span>
+                        </button>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-user me-2"></i>Admin
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Content Area -->
+                <div id="content-area">
+                    <!-- Dashboard Content (Default) -->
+                    <div id="dashboard-content">
+                        <div class="row mb-4">
+                            <div class="col-md-3 mb-3">
+                                <div class="card stat-card">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-clipboard-list fa-2x mb-2"></i>
+                                        <h3 id="total-claims">...</h3>
+                                        <p class="mb-0">Total Claims</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card bg-success text-white">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-check-circle fa-2x mb-2"></i>
+                                        <h3 id="approved-claims">...</h3>
+                                        <p class="mb-0">Approved</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card bg-warning text-white">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-clock fa-2x mb-2"></i>
+                                        <h3 id="pending-claims">...</h3>
+                                        <p class="mb-0">Pending</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card" style="background: linear-gradient(135deg, #0f766e 0%, #134e4a 100%); color: white;">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-times-circle fa-2x mb-2"></i>
+                                        <h3 id="rejected-claims">...</h3>
+                                        <p class="mb-0">Rejected</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Recent Warranty Claims</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="recent-claims-table">
+                                            <div class="loading">
+                                                <i class="fas fa-spinner fa-spin"></i> Loading...
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Quick Actions</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="d-grid gap-2">
+                                            <button class="btn btn-primary" onclick="showWarrantyClaims()">
+                                                <i class="fas fa-plus me-2"></i>New Claim
+                                            </button>
+                                            <button class="btn btn-outline-primary" onclick="showApprovals()">
+                                                <i class="fas fa-tasks me-2"></i>Review Pending
+                                            </button>
+                                            <button class="btn btn-outline-success" onclick="showVehicles()">
+                                                <i class="fas fa-car me-2"></i>Register Vehicle
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Other Content Areas (Hidden by default) -->
+                    <div id="warranty-claims-content" style="display: none;">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Warranty Claims Management</h5>
+                                <button class="btn btn-primary">
+                                    <i class="fas fa-plus me-2"></i>New Claim
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div id="claims-table-container">
+                                    <div class="loading">
+                                        <i class="fas fa-spinner fa-spin"></i> Loading claims...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="vehicles-content" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Vehicle Management</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="vehicles-table-container">
+                                    <div class="loading">
+                                        <i class="fas fa-spinner fa-spin"></i> Loading vehicles...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="customers-content" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Customer Management</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="customers-table-container">
+                                    <div class="loading">
+                                        <i class="fas fa-spinner fa-spin"></i> Loading customers...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="approvals-content" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Approval Queue</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="approvals-table-container">
+                                    <div class="loading">
+                                        <i class="fas fa-spinner fa-spin"></i> Loading approvals...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE = 'http://localhost:8090/api';
+
+        // Navigation functions
+        function showDashboard() {
+            switchContent('dashboard', 'Dashboard');
+            loadDashboard();
+        }
+
+        function showWarrantyClaims() {
+            switchContent('warranty-claims', 'Warranty Claims');
+            loadWarrantyClaims();
+        }
+
+        function showVehicles() {
+            switchContent('vehicles', 'Vehicles');
+            loadVehicles();
+        }
+
+        function showCustomers() {
+            switchContent('customers', 'Customers');
+            loadCustomers();
+        }
+
+        function showApprovals() {
+            switchContent('approvals', 'Approvals');
+            loadApprovals();
+        }
+
+        function switchContent(section, title) {
+            // Hide all content areas
+            document.querySelectorAll('[id$="-content"]').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            // Show selected content
+            document.getElementById(section + '-content').style.display = 'block';
+            
+            // Update page title
+            document.getElementById('page-title').textContent = title;
+            
+            // Update navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // API functions
+        async function apiCall(endpoint) {
+            try {
+                const response = await fetch(API_BASE + endpoint);
+                return await response.json();
+            } catch (error) {
+                console.error('API call failed:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        // Dashboard functions
+        async function loadDashboard() {
+            try {
+                const claims = await apiCall('/warranty-claims');
+                if (claims.success && claims.data) {
+                    updateDashboardStats(claims.data);
+                    displayRecentClaims(claims.data.slice(0, 5));
+                }
+            } catch (error) {
+                console.error('Failed to load dashboard:', error);
+            }
+        }
+
+        function updateDashboardStats(claims) {
+            document.getElementById('total-claims').textContent = claims.length;
+            document.getElementById('approved-claims').textContent = claims.filter(c => c.status === 'approved').length;
+            document.getElementById('pending-claims').textContent = claims.filter(c => c.status === 'submitted' || c.status === 'under_review').length;
+            document.getElementById('rejected-claims').textContent = claims.filter(c => c.status === 'rejected').length;
+        }
+
+        function displayRecentClaims(claims) {
+            const container = document.getElementById('recent-claims-table');
+            if (!claims || claims.length === 0) {
+                container.innerHTML = '<p class="text-muted">No recent claims found.</p>';
+                return;
+            }
+
+            const table = `
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Claim #</th>
+                                <th>Customer</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${claims.map(claim => `
+                                <tr>
+                                    <td><strong>${claim.claim_number}</strong></td>
+                                    <td>Customer #${claim.customer_id}</td>
+                                    <td><span class="badge" style="background: #0d9488; color: white;">${claim.claim_type}</span></td>
+                                    <td>${getStatusBadge(claim.status)}</td>
+                                    <td>${new Date(claim.created_at).toLocaleDateString()}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            container.innerHTML = table;
+        }
+
+        // Warranty Claims functions
+        async function loadWarrantyClaims() {
+            const container = document.getElementById('claims-table-container');
+            try {
+                const response = await apiCall('/warranty-claims');
+                if (response.success && response.data) {
+                    displayClaimsTable(response.data, container);
+                } else {
+                    container.innerHTML = '<p class="text-danger">Failed to load claims.</p>';
+                }
+            } catch (error) {
+                container.innerHTML = '<p class="text-danger">Error loading claims.</p>';
+            }
+        }
+
+        function displayClaimsTable(claims, container) {
+            if (!claims || claims.length === 0) {
+                container.innerHTML = '<p class="text-muted">No claims found.</p>';
+                return;
+            }
+
+            const table = `
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Claim Number</th>
+                                <th>Customer</th>
+                                <th>Type</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${claims.map(claim => `
+                                <tr>
+                                    <td><strong>${claim.claim_number}</strong></td>
+                                    <td>Customer #${claim.customer_id}</td>
+                                    <td><span class="badge" style="background: #0d9488; color: white;">${claim.claim_type}</span></td>
+                                    <td>${getPriorityBadge(claim.priority)}</td>
+                                    <td>${getStatusBadge(claim.status)}</td>
+                                    <td>${new Date(claim.created_at).toLocaleDateString()}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="viewClaim(${claim.id})">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success" onclick="approveClaim(${claim.id})">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            container.innerHTML = table;
+        }
+
+        // Vehicle functions
+        async function loadVehicles() {
+            const container = document.getElementById('vehicles-table-container');
+            try {
+                const response = await apiCall('/vehicles');
+                if (response.success && response.data) {
+                    displayVehiclesTable(response.data, container);
+                } else {
+                    container.innerHTML = '<p class="text-danger">Failed to load vehicles.</p>';
+                }
+            } catch (error) {
+                container.innerHTML = '<p class="text-danger">Error loading vehicles.</p>';
+            }
+        }
+
+        function displayVehiclesTable(vehicles, container) {
+            if (!vehicles || vehicles.length === 0) {
+                container.innerHTML = '<p class="text-muted">No vehicles found.</p>';
+                return;
+            }
+
+            const table = `
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>VIN</th>
+                                <th>Model</th>
+                                <th>Year</th>
+                                <th>Customer</th>
+                                <th>Registration Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${vehicles.map(vehicle => `
+                                <tr>
+                                    <td><strong>${vehicle.vin}</strong></td>
+                                    <td>${vehicle.model}</td>
+                                    <td>${vehicle.year}</td>
+                                    <td>Customer #${vehicle.customer_id}</td>
+                                    <td>${new Date(vehicle.created_at).toLocaleDateString()}</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            container.innerHTML = table;
+        }
+
+        // Customer functions
+        async function loadCustomers() {
+            const container = document.getElementById('customers-table-container');
+            try {
+                const response = await apiCall('/customers');
+                if (response.success && response.data) {
+                    displayCustomersTable(response.data, container);
+                } else {
+                    container.innerHTML = '<p class="text-danger">Failed to load customers.</p>';
+                }
+            } catch (error) {
+                container.innerHTML = '<p class="text-danger">Error loading customers.</p>';
+            }
+        }
+
+        function displayCustomersTable(customers, container) {
+            if (!customers || customers.length === 0) {
+                container.innerHTML = '<p class="text-muted">No customers found.</p>';
+                return;
+            }
+
+            const table = `
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Customer Code</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Registration Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${customers.map(customer => `
+                                <tr>
+                                    <td><strong>${customer.customer_code}</strong></td>
+                                    <td>${customer.full_name}</td>
+                                    <td>${customer.email}</td>
+                                    <td>${customer.phone_number}</td>
+                                    <td>${new Date(customer.created_at).toLocaleDateString()}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            container.innerHTML = table;
+        }
+
+        // Approval functions
+        async function loadApprovals() {
+            const container = document.getElementById('approvals-table-container');
+            try {
+                const response = await apiCall('/approvals/pending');
+                if (response.success && response.data) {
+                    displayApprovalsTable(response.data, container);
+                } else {
+                    container.innerHTML = '<p class="text-muted">No pending approvals.</p>';
+                }
+            } catch (error) {
+                container.innerHTML = '<p class="text-danger">Error loading approvals.</p>';
+            }
+        }
+
+        function displayApprovalsTable(approvals, container) {
+            if (!approvals || approvals.length === 0) {
+                container.innerHTML = '<p class="text-muted">No pending approvals found.</p>';
+                return;
+            }
+
+            const table = `
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Claim Number</th>
+                                <th>Customer</th>
+                                <th>Priority</th>
+                                <th>Submitted</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${approvals.map(approval => `
+                                <tr>
+                                    <td><strong>${approval.claim_number}</strong></td>
+                                    <td>Customer #${approval.customer_id}</td>
+                                    <td>${getPriorityBadge(approval.priority)}</td>
+                                    <td>${new Date(approval.created_at).toLocaleDateString()}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-success me-2" onclick="approveClaim(${approval.id})">
+                                            <i class="fas fa-check me-1"></i>Approve
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="rejectClaim(${approval.id})">
+                                            <i class="fas fa-times me-1"></i>Reject
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            container.innerHTML = table;
+        }
+
+        // Utility functions
+        function getStatusBadge(status) {
+            const statusClasses = {
+                'submitted': 'bg-warning',
+                'under_review': 'style="background: #0d9488;"',
+                'approved': 'bg-success',
+                'rejected': 'style="background: #134e4a;"',
+                'completed': 'bg-secondary'
+            };
+            const className = statusClasses[status] || 'bg-secondary';
+            return `<span class="badge ${className}">${status.replace('_', ' ').toUpperCase()}</span>`;
+        }
+
+        function getPriorityBadge(priority) {
+            const priorityClasses = {
+                'low': 'bg-success',
+                'medium': 'bg-warning',
+                'high': 'style="background: #0d9488;"'
+            };
+            const className = priorityClasses[priority] || 'bg-secondary';
+            return `<span class="badge ${className}">${priority.toUpperCase()}</span>`;
+        }
+
+        // Action functions
+        function viewClaim(claimId) {
+            alert(`Viewing claim ${claimId} - Feature to be implemented`);
+        }
+
+        async function approveClaim(claimId) {
+            if (confirm('Are you sure you want to approve this claim?')) {
+                try {
+                    const response = await fetch(`${API_BASE}/warranty-claims/${claimId}/status`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ status: 'approved' })
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        alert('Claim approved successfully!');
+                        loadWarrantyClaims(); // Refresh the list
+                    } else {
+                        alert('Failed to approve claim.');
+                    }
+                } catch (error) {
+                    alert('Error approving claim.');
+                }
+            }
+        }
+
+        async function rejectClaim(claimId) {
+            if (confirm('Are you sure you want to reject this claim?')) {
+                try {
+                    const response = await fetch(`${API_BASE}/warranty-claims/${claimId}/status`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ status: 'rejected' })
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        alert('Claim rejected successfully!');
+                        loadWarrantyClaims(); // Refresh the list
+                    } else {
+                        alert('Failed to reject claim.');
+                    }
+                } catch (error) {
+                    alert('Error rejecting claim.');
+                }
+            }
+        }
+
+        // Initialize dashboard on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboard();
+        });
+    </script>
+</body>
+</html>

@@ -112,6 +112,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     Cookies.remove('user_data');
     setUser(null);
     api.logout();
+    // Redirect to login page
+    window.location.href = '/login';
   };
 
   return (
