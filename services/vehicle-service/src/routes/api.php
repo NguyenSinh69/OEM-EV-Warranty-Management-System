@@ -16,8 +16,10 @@ Route::post('/vehicles/{vin}/parts', [VehicleController::class, 'addParts']);
 Route::get('/vehicles/{vin}/history', [VehicleController::class, 'getHistory']);
 Route::post('/vehicles/{vin}/service', [VehicleController::class, 'addService']);
 
+// === Ticket #34 - Customer: Xe của tôi (Dashboard) ===
+Route::get('/customer/vehicles', [VehicleController::class, 'byOwner']);
 
 // Route mặc định
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
-});
+}); 

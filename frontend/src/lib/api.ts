@@ -1,274 +1,171 @@
+// frontend/src/lib/api.ts
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { ApiResponse, LoginRequest, LoginResponse, User, Vehicle, Customer, WarrantyClaim, DashboardStats } from '@/types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost';
+// Nếu bạn chưa có các type riêng, giữ any để tránh lỗi build
+export type ApiResponse<T = any> = T;
+export type LoginRequest = any;
+export type LoginResponse = any;
+export type User = any;
+export type Vehicle = any;
+export type Customer = any;
+export type WarrantyClaim = any;
+export type DashboardStats = any;
 
-// API client configuration
+/** Ưu tiên KONG URL, rồi tới API_BASE_URL, cuối cùng default localhost:8000 */
+export const API_BASE_URL =
+  process.env.NEXT_PUBLIC_KONG_API_URL ||
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  'http://localhost:8000';
+
+/** Axios client gọi QUA KONG */
 const apiClient = axios.create({
+  baseURL: API_BASE_URL,
   timeout: 10000,
 });
 
-// Request interceptor to add auth token
+/** Gắn JWT từ cookie nếu có */
 apiClient.interceptors.request.use((config) => {
   const token = Cookies.get('auth_token');
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers = config.headers ?? {};
+    (config.headers as any).Authorization = `Bearer ${token}`;
   }
   return config;
 });
 
-// Response interceptor for error handling
+/** 401 -> xoá token & chuyển về /login */
 apiClient.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
+  (res) => res,
+  (err) => {
+    if (err.response?.status === 401) {
       Cookies.remove('auth_token');
-      window.location.href = '/login';
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      }
     }
-    return Promise.reject(error);
+    return Promise.reject(err);
   }
 );
 
+/** Helper GET đơn giản dùng cho SWR/fetch */
+export async function apiGet(path: string, init?: RequestInit) {
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    cache: 'no-store',
+    ...init,
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
 export const api = {
-  // Authentication
+  // ================= AUTH =================
   async login(credentials: LoginRequest): Promise<ApiResponse<LoginResponse>> {
-    const response = await apiClient.post(`${API_BASE_URL}:8001/api/auth/login`, credentials);
-    return response.data;
+    const res = await apiClient.post(`/api/auth/login`, credentials);
+    return res.data;
   },
 
-  async register(userData: any): Promise<ApiResponse<User>> {
-    const response = await apiClient.post(`${API_BASE_URL}:8001/api/auth/register`, userData);
-    return response.data;
+  async register(userData: Partial<User>): Promise<ApiResponse<User>> {
+    const res = await apiClient.post(`/api/auth/register`, userData);
+    return res.data;
   },
 
   async logout(): Promise<void> {
     Cookies.remove('auth_token');
   },
 
-  // Customer Service (Port 8001)
+  // ================ CUSTOMERS ==============
   async getCustomers(): Promise<ApiResponse<Customer[]>> {
-    const response = await apiClient.get(`${API_BASE_URL}:8001/api/customers`);
-    return response.data;
+    const res = await apiClient.get(`/api/customers`);
+    return res.data;
   },
 
-  async getCustomer(id: number): Promise<ApiResponse<Customer>> {
-    const response = await apiClient.get(`${API_BASE_URL}:8001/api/customers/${id}`);
-    return response.data;
+  async getCustomer(id: number | string): Promise<ApiResponse<Customer>> {
+    const res = await apiClient.get(`/api/customers/${id}`);
+    return res.data;
   },
 
-  async getCustomerVehicles(customerId: number): Promise<ApiResponse<Vehicle[]>> {
-    const response = await apiClient.get(`${API_BASE_URL}:8001/api/customers/${customerId}/vehicles`);
-    return response.data;
+  // ===== VEHICLES cho Dashboard (ownerId) ==
+  // GET /api/customer/vehicles?ownerId=<id>
+  async getCustomerVehiclesByOwner(
+    ownerId: number | string
+  ): Promise<ApiResponse<{ items: Vehicle[] } | Vehicle[]>> {
+    const res = await apiClient.get(`/api/customer/vehicles`, { params: { ownerId } });
+    return res.data;
   },
 
-  // Vehicle Service (Port 8003)
-  async getVehicles(): Promise<ApiResponse<Vehicle[]>> {
-    const response = await apiClient.get(`${API_BASE_URL}:8003/api/vehicles`);
-    return response.data;
+  // ================ CLAIMS (Customer) ======
+  // List: GET /api/customer/claims?customer_id=&status=&page=&limit=
+  async listCustomerClaims(params: {
+    customer_id: number | string;
+    status?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<ApiResponse<{ items: WarrantyClaim[] } | WarrantyClaim[]>> {
+    const res = await apiClient.get(`/api/customer/claims`, { params });
+    return res.data;
   },
 
-  async getVehicleByVin(vin: string): Promise<ApiResponse<Vehicle>> {
-    const response = await apiClient.get(`${API_BASE_URL}:8003/api/vehicles/${vin}`);
-    return response.data;
+  // Detail: GET /api/customer/claims/{id}?customer_id=
+  async getCustomerClaim(
+    id: string,
+    customer_id: number | string
+  ): Promise<ApiResponse<WarrantyClaim>> {
+    const res = await apiClient.get(`/api/customer/claims/${id}`, {
+      params: { customer_id },
+    });
+    return res.data;
   },
 
-  async getVehicleWarranty(vin: string): Promise<ApiResponse<any>> {
-    const response = await apiClient.get(`${API_BASE_URL}:8003/api/vehicles/${vin}/warranty`);
-    return response.data;
+  // Create: POST /api/customer/claims
+  async createCustomerClaim(payload: {
+    customer_id: number | string;
+    vin: string;
+    description?: string;
+  }): Promise<ApiResponse<WarrantyClaim>> {
+    const res = await apiClient.post(`/api/customer/claims`, payload);
+    return res.data;
   },
 
-  async registerVehicle(vehicleData: any): Promise<ApiResponse<Vehicle>> {
-    const response = await apiClient.post(`${API_BASE_URL}:8003/api/vehicles`, vehicleData);
-    return response.data;
+  // Upload: POST /api/customer/claims/{id}/attachments (multipart)
+  async uploadClaimAttachments(
+    id: string,
+    customer_id: number | string,
+    files: File[] | FileList
+  ): Promise<ApiResponse<any>> {
+    const form = new FormData();
+    form.append('customer_id', String(customer_id));
+    const list = Array.isArray(files) ? files : Array.from(files);
+    list.forEach((f) => form.append('files[]', f));
+    const res = await apiClient.post(`/api/customer/claims/${id}/attachments`, form);
+    return res.data;
   },
 
-  // Warranty Service (Port 8002)
-  async getWarrantyClaims(): Promise<ApiResponse<WarrantyClaim[]>> {
-    const response = await apiClient.get(`${API_BASE_URL}:8002/api/warranty/claims`);
-    return response.data;
-  },
-
-  async getWarrantyClaim(id: number): Promise<ApiResponse<WarrantyClaim>> {
-    const response = await apiClient.get(`${API_BASE_URL}:8002/api/warranty/claims/${id}`);
-    return response.data;
-  },
-
-  async createWarrantyClaim(claimData: any): Promise<ApiResponse<WarrantyClaim>> {
-    const response = await apiClient.post(`${API_BASE_URL}:8002/api/warranty/claims`, claimData);
-    return response.data;
-  },
-
-  async updateWarrantyClaim(id: number, claimData: any): Promise<ApiResponse<WarrantyClaim>> {
-    const response = await apiClient.put(`${API_BASE_URL}:8002/api/warranty/claims/${id}`, claimData);
-    return response.data;
-  },
-
-  async approveWarrantyClaim(id: number): Promise<ApiResponse<WarrantyClaim>> {
-    const response = await apiClient.put(`${API_BASE_URL}:8002/api/warranty/claims/${id}/approve`);
-    return response.data;
-  },
-
-  async rejectWarrantyClaim(id: number, reason: string): Promise<ApiResponse<WarrantyClaim>> {
-    const response = await apiClient.put(`${API_BASE_URL}:8002/api/warranty/claims/${id}/reject`, { reason });
-    return response.data;
-  },
-
-  // Admin Service (Port 8004)
+  // ================= ADMIN =================
   async getDashboardStats(): Promise<ApiResponse<DashboardStats>> {
-    const response = await apiClient.get(`${API_BASE_URL}:8004/api/admin/stats`);
-    return response.data;
+    const res = await apiClient.get(`/api/admin/stats`);
+    return res.data;
   },
 
   async getSystemHealth(): Promise<ApiResponse<any>> {
-    const response = await apiClient.get(`${API_BASE_URL}:8004/api/admin/health`);
-    return response.data;
+    const res = await apiClient.get(`/api/admin/health`);
+    return res.data;
   },
 
-  // Notification Service (Port 8005)
+  // ============== NOTIFICATIONS ============
   async getNotifications(): Promise<ApiResponse<any[]>> {
-    const response = await apiClient.get(`${API_BASE_URL}:8005/api/notifications`);
-    return response.data;
+    const res = await apiClient.get(`/api/notifications`);
+    return res.data;
   },
 
   async sendNotification(notificationData: any): Promise<ApiResponse<any>> {
-    const response = await apiClient.post(`${API_BASE_URL}:8005/api/notifications`, notificationData);
-    return response.data;
+    const res = await apiClient.post(`/api/notifications`, notificationData);
+    return res.data;
   },
 
-  // SC Staff APIs
-  scStaff: {
-    // Dashboard
-    getDashboardStats: async (): Promise<ApiResponse<any>> => {
-      const response = await apiClient.get(`${API_BASE_URL}:8003/api/sc-staff/dashboard/stats`);
-      return response.data;
-    },
-
-    // Vehicle Registration
-    registerVehicle: async (vehicleData: any): Promise<ApiResponse<any>> => {
-      const response = await apiClient.post(`${API_BASE_URL}:8003/api/sc-staff/vehicles/register`, vehicleData);
-      return response.data;
-    },
-
-    searchVehicles: async (query: string, searchType: string = 'all'): Promise<ApiResponse<any[]>> => {
-      const response = await apiClient.get(`${API_BASE_URL}:8003/api/sc-staff/vehicles/search`, {
-        params: { query, search_type: searchType }
-      });
-      return response.data;
-    },
-
-    getReferenceData: async (): Promise<ApiResponse<any>> => {
-      const response = await apiClient.get(`${API_BASE_URL}:8003/api/sc-staff/reference-data`);
-      return response.data;
-    },
-
-    // Warranty Claims
-    createClaim: async (claimData: any): Promise<ApiResponse<any>> => {
-      const response = await apiClient.post(`${API_BASE_URL}:8003/api/sc-staff/warranty-claims/create`, claimData);
-      return response.data;
-    },
-
-    getWarrantyClaims: async (status?: string): Promise<ApiResponse<any[]>> => {
-      const response = await apiClient.get(`${API_BASE_URL}:8003/api/sc-staff/warranty-claims`, {
-        params: status ? { status } : {}
-      });
-      return response.data;
-    },
-
-    // Recall Campaigns
-    getRecallCampaigns: async (): Promise<ApiResponse<any[]>> => {
-      const response = await apiClient.get(`${API_BASE_URL}:8003/api/sc-staff/recalls`);
-      return response.data;
-    },
-
-    // File Upload
-    uploadFile: async (file: File, category: string = 'claims'): Promise<ApiResponse<any>> => {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('category', category);
-
-      const response = await apiClient.post(`${API_BASE_URL}:8006/api/upload/file`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      return response.data;
-    },
-  },
-
-  // Customer Portal APIs
-  customer: {
-    getMyVehicles: async (): Promise<ApiResponse<Vehicle[]>> => {
-      const response = await apiClient.get(`${API_BASE_URL}:8001/api/customer/vehicles`);
-      return response.data;
-    },
-
-    getMyClaims: async (status?: string): Promise<ApiResponse<WarrantyClaim[]>> => {
-      const response = await apiClient.get(`${API_BASE_URL}:8001/api/customer/claims`, {
-        params: status ? { status } : {}
-      });
-      return response.data;
-    },
-
-    createClaim: async (claimData: any): Promise<ApiResponse<WarrantyClaim>> => {
-      const response = await apiClient.post(`${API_BASE_URL}:8001/api/customer/claims`, claimData);
-      return response.data;
-    },
-
-    getClaimDetails: async (claimId: number): Promise<ApiResponse<WarrantyClaim>> => {
-      const response = await apiClient.get(`${API_BASE_URL}:8001/api/customer/claims/${claimId}`);
-      return response.data;
-    },
-
-    bookAppointment: async (appointmentData: any): Promise<ApiResponse<any>> => {
-      const response = await apiClient.post(`${API_BASE_URL}:8001/api/customer/appointments`, appointmentData);
-      return response.data;
-    },
-
-    getMyAppointments: async (): Promise<ApiResponse<any[]>> => {
-      const response = await apiClient.get(`${API_BASE_URL}:8001/api/customer/appointments`);
-      return response.data;
-    },
-
-    getMyNotifications: async (): Promise<ApiResponse<any[]>> => {
-      const response = await apiClient.get(`${API_BASE_URL}:8001/api/customer/notifications`);
-      return response.data;
-    },
-
-    markNotificationAsRead: async (notificationId: number): Promise<ApiResponse<any>> => {
-      const response = await apiClient.put(`${API_BASE_URL}:8001/api/customer/notifications/${notificationId}/read`);
-      return response.data;
-    },
-
-    deleteNotification: async (notificationId: number): Promise<ApiResponse<any>> => {
-      const response = await apiClient.delete(`${API_BASE_URL}:8001/api/customer/notifications/${notificationId}`);
-      return response.data;
-    },
-  },
-
-  // Health checks for all services
-  async checkServicesHealth(): Promise<Record<string, any>> {
-    const services = [
-      { name: 'customer', port: 8001 },
-      { name: 'warranty', port: 8002 },
-      { name: 'vehicle', port: 8003 },
-      { name: 'admin', port: 8004 },
-      { name: 'notification', port: 8005 },
-      { name: 'upload', port: 8006 },
-    ];
-
-    const healthChecks = await Promise.allSettled(
-      services.map(async (service) => {
-        const healthPath = service.name === 'upload' ? '/api/upload/health' : '/api/health';
-        const response = await apiClient.get(`${API_BASE_URL}:${service.port}${healthPath}`);
-        return { [service.name]: response.data };
-      })
-    );
-
-    return healthChecks.reduce((acc, result, index) => {
-      if (result.status === 'fulfilled') {
-        return { ...acc, ...result.value };
-      } else {
-        return { ...acc, [services[index].name]: { status: 'error', error: result.reason } };
-      }
-    }, {});
+  // ================ HEALTH =================
+  async checkGatewayHealth(): Promise<any> {
+    const res = await apiClient.get(`/api/health`);
+    return res.data;
   },
 };

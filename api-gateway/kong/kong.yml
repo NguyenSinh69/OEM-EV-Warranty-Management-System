@@ -6,96 +6,93 @@ services:
   - name: customer-service
     url: http://customer-service:8001
     tags: ["evm", "customer"]
-    
-  # Warranty Service  
+
+  # Warranty Service
   - name: warranty-service
     url: http://warranty-service:8002
     tags: ["evm", "warranty"]
-    
+
   # Vehicle Service
   - name: vehicle-service
     url: http://vehicle-service:8003
     tags: ["evm", "vehicle"]
-    
+
   # Admin Service
   - name: admin-service
     url: http://admin-service:8004
     tags: ["evm", "admin"]
-    
+
   # Notification Service
   - name: notification-service
     url: http://notification-service:8005
     tags: ["evm", "notification"]
 
 routes:
-  # Health check route
+  # Health check
   - name: health-check
     service: customer-service
     paths: ["/api/health"]
-    methods: ["GET"]
+    methods: ["GET", "OPTIONS"]
     strip_path: false
-    
-  # Customer Service Routes
+
+  # ===== Customer Service (giữ nguyên) =====
   - name: customer-routes
     service: customer-service
     paths: ["/api/customers"]
-    methods: ["GET", "POST", "PUT", "DELETE"]
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
     strip_path: false
-    
+
   - name: customer-auth
     service: customer-service
     paths: ["/api/auth"]
-    methods: ["GET", "POST"]
+    methods: ["GET", "POST", "OPTIONS"]
     strip_path: false
-    
-  # Warranty Service Routes
-  - name: warranty-routes
+
+  # ===== Warranty Service (Ticket #34) =====
+  # List + Create claims: /api/customer/claims
+  - name: warranty-customer-claims
     service: warranty-service
-    paths: ["/api/warranties"]
-    methods: ["GET", "POST", "PUT", "DELETE"]
+    paths: ["/api/customer/claims"]
+    methods: ["GET", "POST", "OPTIONS"]
     strip_path: false
-    
-  - name: warranty-claims
+
+  # Detail + Upload: prefix /api/customer/claims/{id}[...]
+  - name: warranty-customer-claims-detail
     service: warranty-service
-    paths: ["/api/claims"]
-    methods: ["GET", "POST", "PUT", "DELETE"]
+    paths: ["/api/customer/claims/"]
+    methods: ["GET", "POST", "OPTIONS"]
     strip_path: false
-    
-  # Vehicle Service Routes
-  - name: vehicle-routes
+
+  # ===== Vehicle Service (Ticket #34) =====
+  # Vehicles for dashboard: /api/customer/vehicles?ownerId=...
+  - name: vehicle-customer-vehicles
     service: vehicle-service
-    paths: ["/api/vehicles"]
-    methods: ["GET", "POST", "PUT", "DELETE"]
+    paths: ["/api/customer/vehicles"]
+    methods: ["GET", "OPTIONS"]
     strip_path: false
-    
-  - name: vehicle-lookup
-    service: vehicle-service
-    paths: ["/api/vehicles/lookup"]
-    methods: ["GET"]
-    strip_path: false
-    
-  # Admin Service Routes
+
+  # ===== Admin Service (giữ nguyên) =====
   - name: admin-routes
     service: admin-service
     paths: ["/api/admin"]
-    methods: ["GET", "POST", "PUT", "DELETE"]
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
     strip_path: false
-    
+
   - name: admin-policies
     service: admin-service
     paths: ["/api/policies"]
-    methods: ["GET", "POST", "PUT", "DELETE"]
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
     strip_path: false
-    
-  # Notification Service Routes
+
+  # ===== Notification Service (giữ nguyên) =====
   - name: notification-routes
     service: notification-service
     paths: ["/api/notifications"]
-    methods: ["GET", "POST", "PUT", "DELETE"]
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
     strip_path: false
 
 plugins:
-  # CORS Plugin
+  # ===== CORS (global) =====
   - name: cors
     config:
       origins: ["*"]
@@ -105,66 +102,70 @@ plugins:
       credentials: true
       max_age: 3600
 
-  # Rate Limiting
+  # ===== Rate Limiting (global) =====
   - name: rate-limiting
     config:
       minute: 100
       hour: 1000
       day: 10000
-      
-  # Request Size Limiting
+
+  # ===== Request Size Limiting (global) =====
+  # Tăng lên 50MB để upload ảnh/tài liệu
   - name: request-size-limiting
     config:
-      allowed_payload_size: 10
+      allowed_payload_size: 50
 
-  # JWT Authentication (Global)
+  # ===== JWT cho các route mới (Ticket #34) =====
+  - name: jwt
+    route: warranty-customer-claims
+    config:
+      header_names: ["Authorization"]
+      claims_to_verify: ["exp"]
+      run_on_preflight: false
+
+  - name: jwt
+    route: warranty-customer-claims-detail
+    config:
+      header_names: ["Authorization"]
+      claims_to_verify: ["exp"]
+      run_on_preflight: false
+
+  - name: jwt
+    route: vehicle-customer-vehicles
+    config:
+      header_names: ["Authorization"]
+      claims_to_verify: ["exp"]
+      run_on_preflight: false
+
+  # ===== JWT (các route cũ giữ nguyên) =====
   - name: jwt
     route: customer-routes
     config:
-      uri_param_names: ["jwt"]
-      cookie_names: ["jwt"]
       header_names: ["Authorization"]
       claims_to_verify: ["exp"]
-      
-  - name: jwt
-    route: warranty-routes
-    config:
-      uri_param_names: ["jwt"]
-      cookie_names: ["jwt"]
-      header_names: ["Authorization"]
-      claims_to_verify: ["exp"]
-      
-  - name: jwt
-    route: vehicle-routes
-    config:
-      uri_param_names: ["jwt"]
-      cookie_names: ["jwt"]
-      header_names: ["Authorization"]
-      claims_to_verify: ["exp"]
-      
+      run_on_preflight: false
+
   - name: jwt
     route: admin-routes
     config:
-      uri_param_names: ["jwt"]
-      cookie_names: ["jwt"]
       header_names: ["Authorization"]
       claims_to_verify: ["exp"]
-      
+      run_on_preflight: false
+
   - name: jwt
     route: notification-routes
     config:
-      uri_param_names: ["jwt"]
-      cookie_names: ["jwt"]
       header_names: ["Authorization"]
       claims_to_verify: ["exp"]
+      run_on_preflight: false
 
 consumers:
   - username: evm-admin
     custom_id: admin-001
-    
+
   - username: evm-customer
     custom_id: customer-001
-    
+
   - username: evm-staff
     custom_id: staff-001
 
@@ -172,11 +173,11 @@ jwt_secrets:
   - consumer: evm-admin
     key: admin-jwt-key
     secret: "your-admin-jwt-secret-key-here"
-    
+
   - consumer: evm-customer
     key: customer-jwt-key
     secret: "your-customer-jwt-secret-key-here"
-    
+
   - consumer: evm-staff
     key: staff-jwt-key
     secret: "your-staff-jwt-secret-key-here"
