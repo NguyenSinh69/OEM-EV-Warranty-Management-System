@@ -219,6 +219,19 @@ services:
     networks:
       - evm_network
 
+  # File Upload Service
+  file-upload-service:
+    build:
+      context: ./services/file-upload-service
+      dockerfile: Dockerfile
+    volumes:
+      - ./services/file-upload-service/uploads:/var/www/uploads
+      - ./services/file-upload-service/public:/var/www/html
+    ports:
+      - "8006:80"
+    networks:
+      - evm_network
+
   # Redis for Caching (Optional)
   redis:
     image: redis:7-alpine

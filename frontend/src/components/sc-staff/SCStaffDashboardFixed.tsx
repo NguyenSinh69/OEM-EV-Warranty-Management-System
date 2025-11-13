@@ -10,6 +10,7 @@ import {
   PlusIcon,
   DocumentTextIcon
 } from '@heroicons/react/24/outline';
+import { api } from '@/lib/api';
 
 // Type definitions
 interface VehicleRegistrationForm {
@@ -98,22 +99,40 @@ export default function SCStaffDashboardNew() {
     total_vehicles: 0
   });
 
+  // Load dashboard stats from API
+  useEffect(() => {
+    if (activeTab === 'dashboard') {
+      loadDashboardStats();
+    }
+  }, [activeTab]);
+
+  const loadDashboardStats = async () => {
+    try {
+      const response = await api.scStaff.getDashboardStats();
+      if (response.success) {
+        setStats(response.data);
+      }
+    } catch (error) {
+      console.error('Failed to load dashboard stats:', error);
+    }
+  };
+
   // Forms state
   const [vehicleForm, setVehicleForm] = useState<VehicleRegistrationForm>({
     vin: '',
     model_id: '',
-    year: new Date().getFullYear().toString(),
+    year: '',
     color: '',
     customer_id: '',
-    purchase_date: new Date().toISOString().split('T')[0],
-    warranty_start_date: new Date().toISOString().split('T')[0]
+    purchase_date: '',
+    warranty_start_date: ''
   });
 
   const [claimForm, setClaimForm] = useState<WarrantyClaimForm>({
     vehicle_id: '',
     issue_description: '',
     symptoms: '',
-    failure_date: new Date().toISOString().split('T')[0],
+    failure_date: '',
     failure_mileage: '',
     priority: 'medium'
   });
@@ -130,37 +149,33 @@ export default function SCStaffDashboardNew() {
 
   // Load dashboard data on mount
   useEffect(() => {
+    // Set default dates after mount to avoid hydration mismatch
+    const today = new Date().toISOString().split('T')[0];
+    const currentYear = new Date().getFullYear().toString();
+    
+    setVehicleForm(prev => ({
+      ...prev,
+      year: currentYear,
+      purchase_date: today,
+      warranty_start_date: today
+    }));
+    
+    setClaimForm(prev => ({
+      ...prev,
+      failure_date: today
+    }));
+    
     loadDashboardStats();
     loadReferenceData();
     loadWarrantyClaims();
     loadRecallCampaigns();
   }, []);
 
-  const loadDashboardStats = async () => {
-    try {
-      const response = await fetch('/api/sc-staff/dashboard/stats');
-      const data = await response.json();
-      if (data.success) {
-        setStats(data.data);
-      }
-    } catch (error) {
-      console.error('Failed to load dashboard stats:', error);
-      // Mock data for demo
-      setStats({
-        today_registrations: 5,
-        pending_claims: 12,
-        active_recalls: 3,
-        total_vehicles: 247
-      });
-    }
-  };
-
   const loadReferenceData = async () => {
     try {
-      const response = await fetch('/api/sc-staff/reference-data');
-      const data = await response.json();
-      if (data.success) {
-        setReferenceData(data.data);
+      const response = await api.scStaff.getReferenceData();
+      if (response.success) {
+        setReferenceData(response.data);
       }
     } catch (error) {
       console.error('Failed to load reference data:', error);
@@ -183,50 +198,23 @@ export default function SCStaffDashboardNew() {
 
   const loadWarrantyClaims = async () => {
     try {
-      const response = await fetch('/api/sc-staff/warranty-claims');
-      const data = await response.json();
-      if (data.success) {
-        setWarrantyClaims(data.data);
+      const response = await api.scStaff.getWarrantyClaims();
+      if (response.success && response.data) {
+        setWarrantyClaims(response.data);
       }
     } catch (error) {
       console.error('Failed to load warranty claims:', error);
-      // Mock data for demo
-      setWarrantyClaims([
-        {
-          claim_number: 'WC-2024-001',
-          vin: 'VF3ABCDEF12345678',
-          model_name: 'VF8',
-          customer_name: 'Nguyễn Văn A',
-          issue_description: 'Battery showing reduced range capacity',
-          priority: 'medium',
-          status: 'under_review',
-          created_at: '2024-11-05T09:30:00Z'
-        }
-      ]);
     }
   };
 
   const loadRecallCampaigns = async () => {
     try {
-      const response = await fetch('/api/sc-staff/recalls');
-      const data = await response.json();
-      if (data.success) {
-        setRecallCampaigns(data.data);
+      const response = await api.scStaff.getRecallCampaigns();
+      if (response.success && response.data) {
+        setRecallCampaigns(response.data);
       }
     } catch (error) {
       console.error('Failed to load recall campaigns:', error);
-      // Mock data for demo
-      setRecallCampaigns([
-        {
-          campaign_number: 'RC-2024-001',
-          title: 'VF8/VF9 Inverter Software Update',
-          campaign_type: 'recall',
-          description: 'Software update to fix inverter performance issues',
-          severity: 'medium',
-          affected_vehicles: 15,
-          completed_vehicles: 8
-        }
-      ]);
     }
   };
 
@@ -244,14 +232,16 @@ export default function SCStaffDashboardNew() {
       const data = await response.json();
       if (data.success) {
         alert('Vehicle registered successfully!');
+        const today = new Date().toISOString().split('T')[0];
+        const currentYear = new Date().getFullYear().toString();
         setVehicleForm({
           vin: '',
           model_id: '',
-          year: new Date().getFullYear().toString(),
+          year: currentYear,
           color: '',
           customer_id: '',
-          purchase_date: new Date().toISOString().split('T')[0],
-          warranty_start_date: new Date().toISOString().split('T')[0]
+          purchase_date: today,
+          warranty_start_date: today
         });
         loadDashboardStats(); // Refresh stats
       } else {

@@ -18,13 +18,19 @@ export default function ClaimsListPage() {
     try {
       setLoading(true);
       setErr(null);
+
       const res = await api.listCustomerClaims({
-        customer_id: CUSTOMER_ID,
+        // backend đang filter theo customer_id, mình giữ đúng như vậy
+        customer_id: CUSTOMER_ID as any, // nếu TS kêu lỗi kiểu, đổi sang number ID
         status: status || undefined,
         page,
         limit,
       });
-      const data: any[] = Array.isArray(res) ? res : (res as any).items ?? (res as any).data ?? [];
+
+      const data: any[] = Array.isArray(res)
+        ? res
+        : (res as any).items ?? (res as any).data ?? [];
+
       setItems(data);
     } catch (e: any) {
       setErr(e?.message || 'Tải danh sách thất bại');
@@ -42,10 +48,23 @@ export default function ClaimsListPage() {
     <div style={{ padding: 20 }}>
       <h1>Yêu cầu bảo hành của tôi</h1>
 
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center', margin: '12px 0' }}>
+      <div
+        style={{
+          display: 'flex',
+          gap: 12,
+          alignItems: 'center',
+          margin: '12px 0',
+        }}
+      >
         <label>
           Trạng thái:{' '}
-          <select value={status} onChange={(e) => { setPage(1); setStatus(e.target.value); }}>
+          <select
+            value={status}
+            onChange={(e) => {
+              setPage(1);
+              setStatus(e.target.value);
+            }}
+          >
             <option value="">(tất cả)</option>
             <option value="PENDING">PENDING</option>
             <option value="IN_PROGRESS">IN_PROGRESS</option>
@@ -55,7 +74,15 @@ export default function ClaimsListPage() {
           </select>
         </label>
 
-        <Link href="/customer/claims/new" style={{ padding: '8px 12px', background: '#2563eb', color: '#fff', borderRadius: 8 }}>
+        <Link
+          href="/customer/claims/new"
+          style={{
+            padding: '8px 12px',
+            background: '#2563eb',
+            color: '#fff',
+            borderRadius: 8,
+          }}
+        >
           + Tạo yêu cầu
         </Link>
 
@@ -80,7 +107,9 @@ export default function ClaimsListPage() {
           <tbody>
             {items.map((c) => (
               <tr key={c.id}>
-                <td><Link href={`/customer/claims/${c.id}`}>{c.id}</Link></td>
+                <td>
+                  <Link href={`/customer/claims/${c.id}`}>{c.id}</Link>
+                </td>
                 <td>{c.vin}</td>
                 <td>{c.status}</td>
                 <td>{c.created_at || '-'}</td>
@@ -92,9 +121,19 @@ export default function ClaimsListPage() {
       )}
 
       <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
-        <button disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>← Trang trước</button>
+        <button
+          disabled={page <= 1}
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
+        >
+          ← Trang trước
+        </button>
         <span>Trang {page}</span>
-        <button disabled={items.length < limit} onClick={() => setPage((p) => p + 1)}>Trang sau →</button>
+        <button
+          disabled={items.length < limit}
+          onClick={() => setPage((p) => p + 1)}
+        >
+          Trang sau →
+        </button>
       </div>
     </div>
   );

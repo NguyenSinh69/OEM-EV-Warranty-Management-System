@@ -3,14 +3,14 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 // Nếu bạn chưa có các type riêng, giữ any để tránh lỗi build
-type ApiResponse<T = any> = T;
-type LoginRequest = any;
-type LoginResponse = any;
-type User = any;
-type Vehicle = any;
-type Customer = any;
-type WarrantyClaim = any;
-type DashboardStats = any;
+export type ApiResponse<T = any> = T;
+export type LoginRequest = any;
+export type LoginResponse = any;
+export type User = any;
+export type Vehicle = any;
+export type Customer = any;
+export type WarrantyClaim = any;
+export type DashboardStats = any;
 
 /** Ưu tiên KONG URL, rồi tới API_BASE_URL, cuối cùng default localhost:8000 */
 export const API_BASE_URL =
@@ -40,7 +40,9 @@ apiClient.interceptors.response.use(
   (err) => {
     if (err.response?.status === 401) {
       Cookies.remove('auth_token');
-      if (typeof window !== 'undefined') window.location.href = '/login';
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(err);
   }
@@ -48,7 +50,10 @@ apiClient.interceptors.response.use(
 
 /** Helper GET đơn giản dùng cho SWR/fetch */
 export async function apiGet(path: string, init?: RequestInit) {
-  const res = await fetch(`${API_BASE_URL}${path}`, { cache: 'no-store', ...init });
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    cache: 'no-store',
+    ...init,
+  });
   if (!res.ok) throw new Error(await res.text());
   return res.json();
 }
@@ -106,7 +111,9 @@ export const api = {
     id: string,
     customer_id: number | string
   ): Promise<ApiResponse<WarrantyClaim>> {
-    const res = await apiClient.get(`/api/customer/claims/${id}`, { params: { customer_id } });
+    const res = await apiClient.get(`/api/customer/claims/${id}`, {
+      params: { customer_id },
+    });
     return res.data;
   },
 
