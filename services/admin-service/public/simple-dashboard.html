@@ -400,6 +400,104 @@
             </div>
           </div>
 
+          <!-- Edit User Modal -->
+          <div
+            class="modal fade"
+            id="editUserModal"
+            tabindex="-1"
+            aria-labelledby="editUserModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="editUserModalLabel">
+                    ✏️ Chỉnh sửa người dùng
+                  </h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  <div id="editUserMessage"></div>
+                  <form id="editUserForm">
+                    <input type="hidden" id="editUserId" />
+                    <div class="mb-3">
+                      <label for="editUsername" class="form-label"
+                        >Tên đăng nhập</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="editUsername"
+                        required
+                      />
+                    </div>
+                    <div class="mb-3">
+                      <label for="editUserRole" class="form-label"
+                        >Vai trò</label
+                      >
+                      <select class="form-select" id="editUserRole" required>
+                        <option value="">Chọn vai trò...</option>
+                        <option value="Admin">Admin</option>
+                        <option value="EVM_Staff">EVM Staff</option>
+                        <option value="SC_Staff">SC Staff</option>
+                        <option value="SC_Technician">SC Technician</option>
+                      </select>
+                    </div>
+                    <div class="mb-3">
+                      <label for="editUserEmail" class="form-label"
+                        >Email</label
+                      >
+                      <input
+                        type="email"
+                        class="form-control"
+                        id="editUserEmail"
+                      />
+                    </div>
+                    <div class="mb-3">
+                      <label for="editUserNote" class="form-label"
+                        >Ghi chú</label
+                      >
+                      <textarea
+                        class="form-control"
+                        id="editUserNote"
+                        rows="2"
+                      ></textarea>
+                    </div>
+                  </form>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-success"
+                    onclick="updateUser()"
+                  >
+                    <span id="editUserText">💾 Cập nhật</span>
+                    <div
+                      id="editUserSpinner"
+                      class="spinner-border spinner-border-sm ms-2"
+                      style="display: none"
+                      role="status"
+                    >
+                      <span class="visually-hidden">Đang xử lý...</span>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Settings Section -->
           <div
             id="settings-section"
@@ -816,22 +914,166 @@
       }
 
       // Edit User Function
-      function editUser(id) {
-        alert(
-          `Chức năng chỉnh sửa người dùng ID: ${id} sẽ được phát triển trong phiên bản tiếp theo.`
-        );
+      // Edit User Function
+      async function editUser(id) {
+        try {
+          // Load current users to find the user data
+          const response = await fetch("simple-api.php/api/users");
+          const result = await response.json();
+
+          if (result.success) {
+            const user = result.data.find((u) => u.id == id);
+            if (user) {
+              // Fill the edit form with current user data
+              document.getElementById("editUserId").value = user.id;
+              document.getElementById("editUsername").value = user.username;
+              document.getElementById("editUserRole").value = user.role;
+              document.getElementById("editUserEmail").value = user.email || "";
+              document.getElementById("editUserNote").value = user.note || "";
+
+              // Clear any previous messages
+              document.getElementById("editUserMessage").innerHTML = "";
+
+              // Show the modal
+              const editModal = new bootstrap.Modal(
+                document.getElementById("editUserModal")
+              );
+              editModal.show();
+            } else {
+              showMainNotification("❌ Không tìm thấy người dùng", "danger");
+            }
+          }
+        } catch (err) {
+          console.error("Load user error:", err);
+          showMainNotification("❌ Lỗi khi tải thông tin người dùng", "danger");
+        }
       }
 
       // Delete User Function
-      function deleteUser(id, username) {
+      async function deleteUser(id, username) {
         if (
           confirm(
             `⚠️ Bạn có chắc chắn muốn xóa người dùng "${username}"?\n\nHành động này không thể hoàn tác!`
           )
         ) {
-          alert(
-            `Chức năng xóa người dùng ID: ${id} sẽ được phát triển trong phiên bản tiếp theo.`
-          );
+          try {
+            const response = await fetch(`simple-api.php/api/users/${id}`, {
+              method: "DELETE",
+            });
+            const result = await response.json();
+
+            if (result.success) {
+              showMainNotification(`✅ ${result.message}`, "success");
+
+              // Reload users list
+              setTimeout(() => {
+                loadUsers();
+              }, 500);
+            } else {
+              showMainNotification(
+                `❌ ${result.error || "Không thể xóa người dùng"}`,
+                "danger"
+              );
+            }
+          } catch (err) {
+            console.error("Delete user error:", err);
+            showMainNotification("❌ Lỗi kết nối. Vui lòng thử lại.", "danger");
+          }
+        }
+      }
+
+      // Update User Function
+      async function updateUser() {
+        const userId = document.getElementById("editUserId").value;
+        const username = document.getElementById("editUsername").value.trim();
+        const role = document.getElementById("editUserRole").value;
+        const email = document.getElementById("editUserEmail").value.trim();
+        const note = document.getElementById("editUserNote").value.trim();
+
+        // Clear previous messages
+        document.getElementById("editUserMessage").innerHTML = "";
+
+        // Validate input
+        if (!username) {
+          showEditUserMessage("Vui lòng nhập tên đăng nhập", "danger");
+          return;
+        }
+        if (!role) {
+          showEditUserMessage("Vui lòng chọn vai trò", "danger");
+          return;
+        }
+
+        setEditUserLoading(true);
+
+        try {
+          const response = await fetch(`simple-api.php/api/users/${userId}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              username: username,
+              role: role,
+              email: email,
+              note: note,
+            }),
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            showEditUserMessage(`✅ ${result.message}`, "success");
+
+            // Reload users after delay
+            setTimeout(() => {
+              loadUsers();
+            }, 500);
+
+            // Close modal after 2 seconds
+            setTimeout(() => {
+              const modal = bootstrap.Modal.getInstance(
+                document.getElementById("editUserModal")
+              );
+              if (modal) {
+                modal.hide();
+              }
+            }, 2000);
+          } else {
+            showEditUserMessage(
+              result.error || "Không thể cập nhật người dùng",
+              "danger"
+            );
+          }
+        } catch (err) {
+          console.error("Update user error:", err);
+          showEditUserMessage("❌ Lỗi kết nối. Vui lòng thử lại.", "danger");
+        } finally {
+          setEditUserLoading(false);
+        }
+      }
+
+      // Helper functions for Edit User Modal
+      function showEditUserMessage(message, type = "danger") {
+        const msgDiv = document.getElementById("editUserMessage");
+        msgDiv.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show" role="alert">
+          ${message}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>`;
+      }
+
+      function setEditUserLoading(loading) {
+        const button = document.querySelector("#editUserModal .btn-success");
+        const text = document.getElementById("editUserText");
+        const spinner = document.getElementById("editUserSpinner");
+
+        if (loading) {
+          button.disabled = true;
+          text.textContent = "Đang xử lý...";
+          spinner.style.display = "inline-block";
+        } else {
+          button.disabled = false;
+          text.textContent = "💾 Cập nhật";
+          spinner.style.display = "none";
         }
       }
 

@@ -188,6 +188,147 @@ if ($method === 'POST' && strpos($path, '/api/users') !== false) {
     exit();
 }
 
+if ($method === 'PUT' && strpos($path, '/api/users/') !== false) {
+    // Handle update user
+    if (!isset($_SESSION['user'])) {
+        http_response_code(401);
+        echo json_encode(['error' => 'Unauthorized']);
+        exit();
+    }
+    
+    // Extract user ID from path
+    $pathParts = explode('/', trim($path, '/'));
+    $userId = end($pathParts);
+    
+    if (!is_numeric($userId)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid user ID']);
+        exit();
+    }
+    
+    // Get input data
+    $input = json_decode(file_get_contents('php://input'), true);
+    
+    if (!$input || !isset($input['username']) || !isset($input['role'])) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Missing required fields: username, role']);
+        exit();
+    }
+    
+    // Load existing users
+    $users = loadUsersFromFile($usersDataFile);
+    
+    // Find user to update
+    $userFound = false;
+    for ($i = 0; $i < count($users); $i++) {
+        if ($users[$i]['id'] == $userId) {
+            // Check if new username already exists (excluding current user)
+            foreach ($users as $user) {
+                if ($user['username'] === $input['username'] && $user['id'] != $userId) {
+                    http_response_code(400);
+                    echo json_encode(['error' => 'Tên đăng nhập đã tồn tại']);
+                    exit();
+                }
+            }
+            
+            // Update user data
+            $users[$i]['username'] = $input['username'];
+            $users[$i]['role'] = $input['role'];
+            $users[$i]['email'] = $input['email'] ?? $users[$i]['email'];
+            $users[$i]['note'] = $input['note'] ?? $users[$i]['note'];
+            $users[$i]['updated_at'] = date('Y-m-d H:i:s');
+            
+            $userFound = true;
+            break;
+        }
+    }
+    
+    if (!$userFound) {
+        http_response_code(404);
+        echo json_encode(['error' => 'User not found']);
+        exit();
+    }
+    
+    // Save to file
+    if (saveUsersToFile($usersDataFile, $users)) {
+        echo json_encode([
+            'success' => true,
+            'message' => 'Cập nhật người dùng thành công!',
+            'total_users' => count($users)
+        ]);
+    } else {
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Không thể lưu dữ liệu người dùng'
+        ]);
+    }
+    exit();
+}
+
+if ($method === 'DELETE' && strpos($path, '/api/users/') !== false) {
+    // Handle delete user
+    if (!isset($_SESSION['user'])) {
+        http_response_code(401);
+        echo json_encode(['error' => 'Unauthorized']);
+        exit();
+    }
+    
+    // Extract user ID from path
+    $pathParts = explode('/', trim($path, '/'));
+    $userId = end($pathParts);
+    
+    if (!is_numeric($userId)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid user ID']);
+        exit();
+    }
+    
+    // Prevent admin from deleting themselves
+    if (isset($_SESSION['user']) && $_SESSION['user']['id'] == $userId) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Không thể xóa chính mình']);
+        exit();
+    }
+    
+    // Load existing users
+    $users = loadUsersFromFile($usersDataFile);
+    
+    // Find and remove user
+    $userFound = false;
+    $deletedUsername = '';
+    for ($i = 0; $i < count($users); $i++) {
+        if ($users[$i]['id'] == $userId) {
+            $deletedUsername = $users[$i]['username'];
+            array_splice($users, $i, 1);
+            $userFound = true;
+            break;
+        }
+    }
+    
+    if (!$userFound) {
+        http_response_code(404);
+        echo json_encode(['error' => 'User not found']);
+        exit();
+    }
+    
+    // Save to file
+    if (saveUsersToFile($usersDataFile, $users)) {
+        echo json_encode([
+            'success' => true,
+            'message' => "Đã xóa người dùng '{$deletedUsername}' thành công!",
+            'total_users' => count($users)
+        ]);
+    } else {
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Không thể lưu dữ liệu người dùng'
+        ]);
+    }
+    exit();
+}
+
 if ($method === 'GET' && strpos($path, '/api/users') !== false) {
     // Handle get users
     if (!isset($_SESSION['user'])) {
